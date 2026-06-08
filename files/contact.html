@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Contact - Subway Surfers Tournament</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        .contact-wrapper {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 120px 30px 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .contact-form-box {
+            background: rgba(0, 0, 0, 0.82);
+            padding: 35px;
+            border-radius: 15px;
+            border: 1px solid rgba(0,245,255,0.2);
+            box-shadow: 0 0 20px rgba(0,245,255,0.1);
+        }
+
+        .contact-form-box h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #00e676;
+            font-size: 22px;
+        }
+
+        .contact-form-box input,
+        .contact-form-box textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 1px solid rgba(0,245,255,0.3);
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .contact-form-box input::placeholder,
+        .contact-form-box textarea::placeholder {
+            color: #94a3b8;
+        }
+
+        .contact-form-box button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #00f5ff, #ff00c8);
+            color: white;
+            font-weight: bold;
+        }
+
+        .btn-submit:hover { opacity: 0.85; transform: scale(1.02); }
+
+        .btn-reset {
+            background: rgba(255,255,255,0.1);
+            color: #ccc;
+        }
+
+        .btn-reset:hover { background: rgba(255,255,255,0.2); }
+
+        .success-msg {
+            display: none;
+            text-align: center;
+            color: #00e676;
+            margin-top: 12px;
+            font-weight: 600;
+        }
+
+        /* MAP */
+        .map-box {
+            background: rgba(0, 0, 0, 0.82);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(0,245,255,0.2);
+            box-shadow: 0 0 20px rgba(0,245,255,0.1);
+        }
+
+        .map-box h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #00f5ff;
+            font-size: 22px;
+        }
+
+        #map {
+            width: 100%;
+            height: 350px;
+            border-radius: 10px;
+            border: 2px solid rgba(0,245,255,0.3);
+            z-index: 1;
+        }
+
+        .map-info {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #94a3b8;
+            text-align: center;
+        }
+
+        .map-info span { color: #00f5ff; }
+
+        /* CHATBOT */
+        #chatbot-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff00c8, #00f5ff);
+            border: none;
+            cursor: pointer;
+            font-size: 26px;
+            color: white;
+            z-index: 1000;
+            box-shadow: 0 0 20px rgba(255,0,200,0.5);
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #chatbot-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(0,245,255,0.7);
+        }
+
+        #chatbot-box {
+            position: fixed;
+            bottom: 105px;
+            right: 30px;
+            width: 340px;
+            height: 460px;
+            background: rgba(6, 10, 25, 0.97);
+            border: 1px solid rgba(0,245,255,0.35);
+            border-radius: 16px;
+            box-shadow: 0 0 30px rgba(0,245,255,0.2);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #chatbot-box.open { display: flex; }
+
+        .chatbot-header {
+            background: linear-gradient(90deg, #ff00c8, #00f5ff);
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 15px;
+            color: white;
+        }
+
+        .chatbot-close-btn {
+            background: transparent !important;
+            border: none !important;
+            color: white !important;
+            font-size: 18px !important;
+            cursor: pointer !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            width: auto !important;
+            line-height: 1;
+        }
+
+        #chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0,245,255,0.3) transparent;
+        }
+
+        .msg {
+            max-width: 85%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .msg.bot {
+            background: rgba(0,245,255,0.12);
+            border: 1px solid rgba(0,245,255,0.2);
+            color: #e2e8f0;
+            align-self: flex-start;
+            border-bottom-left-radius: 3px;
+        }
+
+        .msg.user {
+            background: linear-gradient(135deg, rgba(255,0,200,0.3), rgba(0,245,255,0.2));
+            border: 1px solid rgba(255,0,200,0.3);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 3px;
+        }
+
+        .msg.typing {
+            background: rgba(0,245,255,0.08);
+            border: 1px solid rgba(0,245,255,0.15);
+            color: #94a3b8;
+            align-self: flex-start;
+            font-style: italic;
+        }
+
+        .chatbot-input-row {
+            display: flex;
+            padding: 12px;
+            gap: 8px;
+            border-top: 1px solid rgba(0,245,255,0.15);
+            background: rgba(0,0,0,0.4);
+            align-items: center;
+        }
+
+        #chat-input {
+            flex: 1;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(0,245,255,0.25);
+            border-radius: 25px;
+            color: white;
+            font-size: 13px;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+        }
+
+        #chat-input:focus { border-color: rgba(0,245,255,0.6); }
+
+        #chat-send {
+            width: 40px !important;
+            height: 40px !important;
+            border-radius: 50% !important;
+            background: linear-gradient(135deg, #ff00c8, #00f5ff) !important;
+            border: none !important;
+            cursor: pointer !important;
+            font-size: 16px !important;
+            color: white !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-shrink: 0 !important;
+            margin-top: 0 !important;
+            padding: 0 !important;
+        }
+
+        #chat-send:hover { opacity: 0.85 !important; }
+
+        @media screen and (max-width: 768px) {
+            .contact-grid { grid-template-columns: 1fr; }
+            #chatbot-box { width: 90vw; right: 5vw; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">🚇 Subway Surfers Tournament</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="schedule.html">Schedule</a>
+            <a href="player.html">Players</a>
+            <a href="contact.html">Contact</a>
+            <a href="leaderboard.html">Leaderboard</a>
+            <a href="signup.html">Sign Up</a>
+            <a href="login.html">Login</a>
+        </nav>
+    </header>
+
+    <div class="contact-wrapper">
+        <div class="contact-grid">
+
+            <!-- CONTACT FORM -->
+            <div class="contact-form-box">
+                <h2>📬 Register / Contact</h2>
+                <form id="contactForm">
+                    <input type="text" id="cName" placeholder="Your Name" required>
+                    <input type="email" id="cEmail" placeholder="Your Email" required>
+                    <textarea id="cMsg" rows="5" placeholder="Your Message" required></textarea>
+                    <button type="submit" class="btn-submit">Submit</button>
+                    <button type="reset" class="btn-reset">Reset</button>
+                </form>
+                <p class="success-msg" id="successMsg">✅ Message sent! We'll contact you soon.</p>
+            </div>
+
+            <!-- MAP -->
+            <div class="map-box">
+                <h2>📍 Find Us — OpenStreetMap</h2>
+                <div id="map"></div>
+                <p class="map-info">
+                    <span>🏟️ Tournament Venue:</span> Islamabad Sports Complex, Pakistan
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <footer style="text-align:center; padding: 20px; color: #94a3b8; position: relative; z-index:1;">
+        © 2026 Subway Surfers Tournament — We Will Contact You Soon!
+    </footer>
+
+    <!-- CHATBOT TOGGLE -->
+    <button id="chatbot-toggle" title="Chat with Tournament Bot">💬</button>
+
+    <!-- CHATBOT BOX -->
+    <div id="chatbot-box">
+        <div class="chatbot-header">
+            🤖 Tournament Bot
+            <button class="chatbot-close-btn" id="close-chat">✕</button>
+        </div>
+        <div id="chat-messages">
+            <div class="msg bot">👋 Hey! I'm the Tournament Bot. Ask me about schedules, players, rules, or anything about the Subway Surfers Tournament! 🚇</div>
+        </div>
+        <div class="chatbot-input-row">
+            <input type="text" id="chat-input" placeholder="Ask me anything..." />
+            <button id="chat-send">➤</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== OPENSTREETMAP (Leaflet.js) =====
+        const map = L.map('map').setView([33.7294, 73.0931], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        }).addTo(map);
+
+        const venueIcon = L.divIcon({
+            html: '<div style="font-size:28px;line-height:1;">🏟️</div>',
+            className: '',
+            iconSize: [36, 36],
+            iconAnchor: [18, 18]
+        });
+
+        L.marker([33.7294, 73.0931], { icon: venueIcon })
+            .addTo(map)
+            .bindPopup('<b>🚇 Subway Surfers Tournament</b><br>Islamabad Sports Complex<br>Islamabad, Pakistan 🇵🇰')
+            .openPopup();
+
+        // ===== CONTACT FORM =====
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const msg = document.getElementById('successMsg');
+            msg.style.display = 'block';
+            this.reset();
+            setTimeout(() => { msg.style.display = 'none'; }, 4000);
+        });
+
+        // ===== CHATBOT =====
+        const toggleBtn  = document.getElementById('chatbot-toggle');
+        const chatBox    = document.getElementById('chatbot-box');
+        const closeBtn   = document.getElementById('close-chat');
+        const sendBtn    = document.getElementById('chat-send');
+        const chatInput  = document.getElementById('chat-input');
+        const chatMsgs   = document.getElementById('chat-messages');
+
+        let conversationHistory = [];
+
+        toggleBtn.addEventListener('click', () => {
+            chatBox.classList.toggle('open');
+            if (chatBox.classList.contains('open')) chatInput.focus();
+        });
+
+        closeBtn.addEventListener('click', () => chatBox.classList.remove('open'));
+
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
+
+        function addMsg(text, role) {
+            const div = document.createElement('div');
+            div.className = 'msg ' + role;
+            div.textContent = text;
+            chatMsgs.appendChild(div);
+            chatMsgs.scrollTop = chatMsgs.scrollHeight;
+            return div;
+        }
+
+        async function sendMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            addMsg(text, 'user');
+            chatInput.value = '';
+            conversationHistory.push({ role: 'user', content: text });
+
+            const typing = addMsg('⏳ Typing...', 'typing');
+
+            try {
+                const res = await fetch("https://api.anthropic.com/v1/messages", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        model: "claude-sonnet-4-20250514",
+                        max_tokens: 1000,
+                        system: "You are a cheerful and helpful chatbot for the Subway Surfers Tournament website — a competitive mobile gaming tournament. Help users with questions about tournament schedules, how to sign up, player profiles, leaderboard standings, game rules, prizes, and contact info. Keep responses short (2-4 sentences max) and enthusiastic. Use a gaming emoji occasionally. If asked something unrelated, politely redirect to the tournament.",
+                        messages: conversationHistory
+                    })
+                });
+                const data = await res.json();
+                typing.remove();
+
+                const reply = (data.content && data.content[0] && data.content[0].text)
+                    ? data.content[0].text
+                    : "Sorry, I couldn't get a response right now! 😅 Try again?";
+
+                conversationHistory.push({ role: 'assistant', content: reply });
+                addMsg(reply, 'bot');
+            } catch (err) {
+                typing.remove();
+                addMsg("⚠️ Connection error. Please try again!", 'bot');
+            }
+        }
+    </script>
+
+</body>
+</html>

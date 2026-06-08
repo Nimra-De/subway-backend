@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Sign Up – Subway Surfers Tournament</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: block !important;
+            min-height: 100vh;
+        }
+
+        .signup-wrap {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 20px 60px;
+        }
+
+        .signup-card {
+            width: 100%;
+            max-width: 460px;
+            background: rgba(5, 10, 25, 0.88);
+            border: 1px solid rgba(0, 245, 255, 0.25);
+            border-radius: 20px;
+            padding: 44px 40px 36px;
+            box-shadow: 0 0 60px rgba(0, 245, 255, 0.08), 0 0 0 1px rgba(255,0,200,0.06), inset 0 1px 0 rgba(255,255,255,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* top accent bar */
+        .signup-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff00c8, #00f5ff, #ffea00);
+        }
+
+        /* corner glow */
+        .signup-card::after {
+            content: '';
+            position: absolute;
+            top: -60px; right: -60px;
+            width: 180px; height: 180px;
+            background: radial-gradient(circle, rgba(255,0,200,0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .card-header .badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #ff00c8;
+            background: rgba(255,0,200,0.1);
+            border: 1px solid rgba(255,0,200,0.3);
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-bottom: 14px;
+        }
+
+        .card-header h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 26px;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 1px;
+            line-height: 1.2;
+        }
+
+        .card-header h1 span {
+            color: #00f5ff;
+        }
+
+        .card-header p {
+            margin-top: 8px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.45);
+        }
+
+        /* input groups */
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .field {
+            margin-bottom: 14px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.45);
+            margin-bottom: 6px;
+            padding-left: 2px;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 11px 14px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+
+        .field input:focus {
+            border-color: #00f5ff;
+            background: rgba(0,245,255,0.04);
+            box-shadow: 0 0 0 3px rgba(0,245,255,0.08);
+        }
+
+        .field input.error-input {
+            border-color: #ff6b6b;
+        }
+
+        .error {
+            font-size: 11px;
+            color: #ff6b6b;
+            margin-top: 4px;
+            padding-left: 2px;
+            min-height: 16px;
+        }
+
+        /* password strength */
+        #strengthBar {
+            width: 100%;
+            height: 3px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        #strengthFill {
+            height: 100%;
+            width: 0%;
+            border-radius: 2px;
+            transition: width 0.3s, background 0.3s;
+        }
+
+        .strength-label {
+            font-size: 11px;
+            margin-top: 4px;
+            color: rgba(255,255,255,0.4);
+            padding-left: 2px;
+        }
+
+        /* register button */
+        .register-btn {
+            width: 100%;
+            padding: 14px;
+            margin-top: 8px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ff00c8, #7b00ff);
+            color: white;
+            font-size: 15px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+            box-shadow: 0 4px 20px rgba(255,0,200,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .register-btn::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.5s;
+        }
+
+        .register-btn:hover::after { left: 160%; }
+        .register-btn:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 6px 28px rgba(255,0,200,0.45); }
+        .register-btn:active { transform: translateY(0); }
+
+        #formMessage {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 13px;
+            min-height: 20px;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .login-link a {
+            color: #00f5ff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .login-link a:hover { color: #ffea00; }
+
+        @media (max-width: 480px) {
+            .signup-card { padding: 32px 22px 28px; }
+            .input-row { grid-template-columns: 1fr; gap: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Subway Tournament</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="login.html">Login</a>
+        </nav>
+    </header>
+
+    <div class="signup-wrap">
+        <div class="signup-card">
+            <div class="card-header">
+                <div class="badge">🏆 Join the Tournament</div>
+                <h1>Create <span>Account</span></h1>
+                <p>Register to compete in the Subway Surfers Tournament</p>
+            </div>
+
+            <form id="signupForm" onsubmit="return false;">
+
+                <div class="input-row">
+                    <div class="field">
+                        <label>First Name</label>
+                        <input type="text" id="firstName" placeholder="Jake">
+                        <div class="error" id="firstNameError"></div>
+                    </div>
+                    <div class="field">
+                        <label>Last Name</label>
+                        <input type="text" id="lastName" placeholder="Runner">
+                        <div class="error" id="lastNameError"></div>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="field">
+                        <label>Age</label>
+                        <input type="number" id="age" placeholder="18" min="1" max="99">
+                        <div class="error" id="ageError"></div>
+                    </div>
+                    <div class="field">
+                        <label>Email</label>
+                        <input type="email" id="email" placeholder="jake@subway.gg">
+                        <div class="error" id="emailMessage"></div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="Create a strong password">
+                    <div id="strengthBar"><div id="strengthFill"></div></div>
+                    <div class="strength-label" id="strengthLabel"></div>
+                    <div class="error" id="passwordError"></div>
+                </div>
+
+                <div class="field">
+                    <label>Confirm Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Repeat your password">
+                    <div class="error" id="confirmPasswordError"></div>
+                </div>
+
+                <button type="submit" class="register-btn">⚡ Register Now</button>
+                <div id="formMessage"></div>
+            </form>
+
+            <div class="login-link">
+                Already have an account? <a href="login.html">Log in →</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        // Password strength indicator
+        document.getElementById('password').addEventListener('input', function() {
+            const val = this.value;
+            const fill = document.getElementById('strengthFill');
+            const label = document.getElementById('strengthLabel');
+            let strength = 0;
+            if (val.length >= 6) strength++;
+            if (val.length >= 10) strength++;
+            if (/[A-Z]/.test(val) && /[0-9]/.test(val)) strength++;
+            if (/[^A-Za-z0-9]/.test(val)) strength++;
+
+            const levels = [
+                { w: '0%', c: 'transparent', t: '' },
+                { w: '25%', c: '#ff6b6b', t: 'Weak' },
+                { w: '55%', c: '#ffea00', t: 'Fair' },
+                { w: '80%', c: '#00f5ff', t: 'Good' },
+                { w: '100%', c: '#00e676', t: 'Strong 💪' },
+            ];
+            const l = levels[strength] || levels[0];
+            fill.style.width = l.w;
+            fill.style.background = l.c;
+            label.textContent = val.length ? l.t : '';
+        });
+    </script>
+</body>
+</html>

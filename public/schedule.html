@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Tournament Schedule – Subway Surfers</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: block !important;
+            min-height: 100vh;
+        }
+
+        .page-wrap {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 110px 20px 80px;
+        }
+
+        /* ── Page header ── */
+        .sched-hero {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .sched-hero .eyebrow {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #ff00c8;
+            background: rgba(255,0,200,0.1);
+            border: 1px solid rgba(255,0,200,0.3);
+            padding: 4px 16px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+        }
+
+        .sched-hero h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(28px, 5vw, 52px);
+            font-weight: 900;
+            color: #ffea00;
+            text-shadow: 0 0 30px rgba(255,234,0,0.3);
+            letter-spacing: 2px;
+            line-height: 1.1;
+        }
+
+        .sched-hero p {
+            margin-top: 10px;
+            color: rgba(255,255,255,0.45);
+            font-size: 14px;
+        }
+
+        /* ── Schedule container ── */
+        .schedule-container {
+            width: 100%;
+            max-width: 860px;
+        }
+
+        /* ── Column headers ── */
+        .sched-head {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            padding: 0 24px;
+            margin-bottom: 10px;
+        }
+
+        .sched-head span {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.3);
+        }
+
+        .sched-head span:nth-child(2) { text-align: center; }
+        .sched-head span:last-child   { text-align: right; }
+
+        /* ── Each match row ── */
+        .match-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            align-items: center;
+            background: rgba(5, 12, 28, 0.75);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-bottom: 10px;
+            transition: border-color 0.2s, background 0.2s, transform 0.15s;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.4s ease both;
+        }
+
+        .match-row:nth-child(1) { animation-delay: 0.05s; }
+        .match-row:nth-child(2) { animation-delay: 0.12s; }
+        .match-row:nth-child(3) { animation-delay: 0.19s; }
+        .match-row:nth-child(4) { animation-delay: 0.26s; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .match-row:hover {
+            border-color: rgba(0,245,255,0.25);
+            background: rgba(0,245,255,0.04);
+            transform: translateX(4px);
+        }
+
+        /* left accent line on hover */
+        .match-row::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 3px;
+            background: #00f5ff;
+            border-radius: 3px 0 0 3px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .match-row:hover::before { opacity: 1; }
+
+        .match-date {
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .match-date .day-num {
+            font-family: 'Orbitron', monospace;
+            font-size: 22px;
+            font-weight: 900;
+            color: #fff;
+            display: block;
+            line-height: 1;
+        }
+
+        .match-name {
+            text-align: center;
+        }
+
+        .match-name .round-label {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(0,245,255,0.7);
+            background: rgba(0,245,255,0.07);
+            border: 1px solid rgba(0,245,255,0.15);
+            padding: 3px 12px;
+            border-radius: 20px;
+            margin-bottom: 6px;
+        }
+
+        .match-name .match-title {
+            display: block;
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .match-time {
+            text-align: right;
+        }
+
+        .match-time .time-val {
+            font-family: 'Orbitron', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            color: #00f5ff;
+            display: block;
+        }
+
+        .match-time .time-zone {
+            font-size: 11px;
+            color: rgba(255,255,255,0.3);
+            letter-spacing: 1px;
+        }
+
+        /* ── GRAND FINAL row ── */
+        .match-row.grand-final {
+            background: linear-gradient(135deg, rgba(255,0,200,0.12), rgba(120,0,255,0.12));
+            border: 1px solid rgba(255,0,200,0.4);
+            transform: none;
+            box-shadow: 0 0 40px rgba(255,0,200,0.12), inset 0 1px 0 rgba(255,255,255,0.07);
+        }
+
+        .match-row.grand-final::before {
+            background: linear-gradient(180deg, #ff00c8, #ffea00);
+            opacity: 1;
+        }
+
+        .match-row.grand-final:hover {
+            border-color: rgba(255,0,200,0.7);
+            transform: translateX(4px);
+        }
+
+        .match-row.grand-final .match-date .day-num { color: #ffea00; }
+
+        .match-row.grand-final .match-name .round-label {
+            color: #ff00c8;
+            background: rgba(255,0,200,0.1);
+            border-color: rgba(255,0,200,0.3);
+            letter-spacing: 3px;
+        }
+
+        .match-row.grand-final .match-name .match-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 22px;
+            font-weight: 900;
+            color: #ffea00;
+            text-shadow: 0 0 20px rgba(255,234,0,0.4);
+        }
+
+        .match-row.grand-final .match-time .time-val {
+            color: #ff00c8;
+            text-shadow: 0 0 12px rgba(255,0,200,0.5);
+        }
+
+        /* trophy badge */
+        .trophy {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 28px;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        /* ── countdown strip ── */
+        .countdown-strip {
+            width: 100%;
+            max-width: 860px;
+            margin-top: 20px;
+            background: rgba(5,12,28,0.7);
+            border: 1px solid rgba(255,234,0,0.15);
+            border-radius: 14px;
+            padding: 18px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .countdown-strip .cd-label {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .cd-boxes {
+            display: flex;
+            gap: 10px;
+        }
+
+        .cd-box {
+            text-align: center;
+            background: rgba(255,234,0,0.06);
+            border: 1px solid rgba(255,234,0,0.15);
+            border-radius: 10px;
+            padding: 8px 16px;
+            min-width: 60px;
+        }
+
+        .cd-box .cd-num {
+            font-family: 'Orbitron', monospace;
+            font-size: 22px;
+            font-weight: 900;
+            color: #ffea00;
+            display: block;
+            line-height: 1;
+        }
+
+        .cd-box .cd-unit {
+            font-size: 9px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.35);
+        }
+
+        @media (max-width: 600px) {
+            .sched-head, .match-row {
+                grid-template-columns: 80px 1fr;
+            }
+            .match-time { display: none; }
+            .sched-head span:last-child { display: none; }
+            .match-name { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Tournament Schedule</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="schedule.html">Schedule</a>
+            <a href="player.html">Players</a>
+            <a href="contact.html">Contact</a>
+            <a href="signup.html">Sign Up</a>
+            <a href="login.html">Login</a>
+        </nav>
+    </header>
+
+    <div class="page-wrap">
+
+        <div class="sched-hero">
+            <div class="eyebrow">📅 Season 2025</div>
+            <h1>MATCH SCHEDULE</h1>
+            <p>All times are local · Subject to change</p>
+        </div>
+
+        <div class="schedule-container">
+
+            <div class="sched-head">
+                <span>Date</span>
+                <span>Match</span>
+                <span>Time</span>
+            </div>
+
+            <div class="match-row">
+                <div class="match-date">
+                    <span class="day-num">01</span>
+                    March
+                </div>
+                <div class="match-name">
+                    <span class="round-label">Quarter Final</span>
+                    <span class="match-title">Quarter Final 1</span>
+                </div>
+                <div class="match-time">
+                    <span class="time-val">2:00 PM</span>
+                    <span class="time-zone">PKT</span>
+                </div>
+            </div>
+
+            <div class="match-row">
+                <div class="match-date">
+                    <span class="day-num">02</span>
+                    March
+                </div>
+                <div class="match-name">
+                    <span class="round-label">Quarter Final</span>
+                    <span class="match-title">Quarter Final 2</span>
+                </div>
+                <div class="match-time">
+                    <span class="time-val">4:00 PM</span>
+                    <span class="time-zone">PKT</span>
+                </div>
+            </div>
+
+            <div class="match-row">
+                <div class="match-date">
+                    <span class="day-num">03</span>
+                    March
+                </div>
+                <div class="match-name">
+                    <span class="round-label">Semi Final</span>
+                    <span class="match-title">Semi Final</span>
+                </div>
+                <div class="match-time">
+                    <span class="time-val">5:00 PM</span>
+                    <span class="time-zone">PKT</span>
+                </div>
+            </div>
+
+            <div class="match-row grand-final">
+                <div class="trophy">🏆</div>
+                <div class="match-date">
+                    <span class="day-num">05</span>
+                    March
+                </div>
+                <div class="match-name">
+                    <span class="round-label">⚡ Grand Final</span>
+                    <span class="match-title">GRAND FINAL</span>
+                </div>
+                <div class="match-time">
+                    <span class="time-val">7:00 PM</span>
+                    <span class="time-zone">PKT</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Countdown -->
+        <div class="countdown-strip">
+            <span class="cd-label">⏱ Grand Final Countdown</span>
+            <div class="cd-boxes">
+                <div class="cd-box"><span class="cd-num" id="cd-days">--</span><span class="cd-unit">Days</span></div>
+                <div class="cd-box"><span class="cd-num" id="cd-hrs">--</span><span class="cd-unit">Hours</span></div>
+                <div class="cd-box"><span class="cd-num" id="cd-min">--</span><span class="cd-unit">Mins</span></div>
+                <div class="cd-box"><span class="cd-num" id="cd-sec">--</span><span class="cd-unit">Secs</span></div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>⚡ Get Ready For The Grand Final — May The Best Player Win!</footer>
+
+    <script>
+        // Countdown to Grand Final (March 5, next year if passed)
+        function tick() {
+            const now = new Date();
+            let target = new Date(now.getFullYear(), 2, 5, 19, 0, 0); // March 5 7pm
+            if (target < now) target.setFullYear(target.getFullYear() + 1);
+            const diff = target - now;
+            const d = Math.floor(diff / 86400000);
+            const h = Math.floor((diff % 86400000) / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            document.getElementById('cd-days').textContent = String(d).padStart(2,'0');
+            document.getElementById('cd-hrs').textContent  = String(h).padStart(2,'0');
+            document.getElementById('cd-min').textContent  = String(m).padStart(2,'0');
+            document.getElementById('cd-sec').textContent  = String(s).padStart(2,'0');
+        }
+        tick();
+        setInterval(tick, 1000);
+    </script>
+</body>
+</html>

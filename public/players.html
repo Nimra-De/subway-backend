@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Top Players — Subway Surfers Tournament</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Orbitron:wght@700;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --cyan: #00f5ff;
+      --pink: #ff00c8;
+      --gold: #ffd700;
+      --bg:   #06090f;
+      --card: rgba(8,16,32,0.92);
+    }
+    * { box-sizing:border-box; margin:0; padding:0; }
+
+    /* ── BACKGROUND with subway.jpg + blur overlay ── */
+    body {
+      font-family:'Poppins',sans-serif;
+      color:#f0f4ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+      background:#06090f;
+    }
+    /* Blurred subway background layer */
+    body::before {
+      content:'';
+      position:fixed; inset:0;
+      background: url('subway.jpg') no-repeat center center / cover;
+      filter:blur(5px) brightness(0.38) saturate(0.8);
+      transform:scale(1.08);
+      z-index:0;
+      will-change:transform;
+    }
+    /* Dark gradient overlay on top of image */
+    body::after {
+      content:'';
+      position:fixed; inset:0;
+      background: linear-gradient(160deg, rgba(2,5,15,0.75) 0%, rgba(6,3,20,0.70) 50%, rgba(2,8,20,0.78) 100%);
+      z-index:1;
+    }
+    body > * { position:relative; z-index:2; }
+
+    /* ── HEADER ── */
+    header {
+      position:fixed; top:0; width:100%;
+      display:flex; justify-content:space-between; align-items:center;
+      padding:14px 32px;
+      background:rgba(0,0,0,0.82);
+      border-bottom:2px solid var(--cyan);
+      backdrop-filter:blur(10px);
+      z-index:100;
+    }
+    header .logo {
+      font-family:'Orbitron',monospace; font-size:20px;
+      color:var(--cyan);
+      text-shadow:0 0 10px var(--cyan),0 0 22px var(--pink);
+    }
+    header nav a {
+      color:#cdd6f4; text-decoration:none;
+      margin-left:18px; font-weight:600; font-size:13px;
+      letter-spacing:.03em; transition:color .25s;
+    }
+    header nav a:hover, header nav a.active { color:var(--cyan); }
+
+    /* ── PAGE ── */
+    .players-page {
+      padding:130px 40px 80px;
+      max-width:1180px; margin:0 auto; text-align:center;
+    }
+    .players-page h1 {
+      font-family:'Orbitron',monospace;
+      font-size:clamp(28px,5vw,52px); font-weight:900;
+      color:var(--gold);
+      text-shadow:0 0 12px var(--pink),0 0 28px var(--cyan);
+      margin-bottom:6px;
+    }
+    .subtitle { color:var(--cyan); font-size:15px; opacity:.8; margin-bottom:36px; }
+
+    /* ── FILTER BAR ── */
+    .filter-bar {
+      display:flex; flex-wrap:wrap; gap:12px;
+      justify-content:center; align-items:center;
+      margin-bottom:14px;
+    }
+    .search-wrap { position:relative; flex:1 1 240px; max-width:300px; }
+    .search-wrap .si {
+      position:absolute; left:13px; top:50%;
+      transform:translateY(-50%); pointer-events:none; opacity:.5; font-size:15px;
+    }
+    .filter-bar input[type="text"] {
+      width:100%; padding:12px 14px 12px 40px;
+      background:rgba(0,245,255,0.07);
+      border:1px solid rgba(0,245,255,0.3);
+      border-radius:10px; color:#f0f4ff;
+      font-family:'Poppins',sans-serif; font-size:14px; outline:none;
+      transition:border-color .25s,box-shadow .25s;
+    }
+    .filter-bar input::placeholder { color:rgba(255,255,255,.32); }
+    .filter-bar input:focus { border-color:var(--cyan); box-shadow:0 0 10px rgba(0,245,255,.25); }
+    .filter-bar select {
+      flex:0 1 175px; padding:12px 34px 12px 14px;
+      background:rgba(0,245,255,0.07) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%2300f5ff' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center;
+      border:1px solid rgba(0,245,255,.3); border-radius:10px;
+      color:#f0f4ff; font-family:'Poppins',sans-serif; font-size:14px;
+      outline:none; cursor:pointer; appearance:none;
+      transition:border-color .25s,box-shadow .25s;
+    }
+    .filter-bar select:focus { border-color:var(--cyan); box-shadow:0 0 10px rgba(0,245,255,.2); }
+    .filter-bar select option { background:#0a1020; color:#f0f4ff; }
+    .btn-clear {
+      padding:12px 20px;
+      background:rgba(255,0,200,.1);
+      border:1px solid rgba(255,0,200,.4);
+      border-radius:10px; color:var(--pink);
+      font-family:'Poppins',sans-serif; font-weight:600; font-size:13px;
+      cursor:pointer; transition:background .25s,box-shadow .25s;
+    }
+    .btn-clear:hover { background:rgba(255,0,200,.22); box-shadow:0 0 12px rgba(255,0,200,.3); }
+
+    #resultCount { font-size:13px; color:rgba(0,245,255,.65); margin-bottom:26px; min-height:20px; }
+
+    /* ── GRID ── */
+    #playersContainer {
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+      gap:26px;
+    }
+
+    /* ── FLIP WRAPPER ── */
+    .cardWrap {
+      perspective:900px;
+      opacity:0;
+      transform:rotateY(-90deg) scale(.85);
+      transition:opacity .38s ease, transform .46s cubic-bezier(.22,1,.36,1);
+    }
+    .cardWrap.flip-in  { opacity:1; transform:rotateY(0deg) scale(1); }
+    .cardWrap.flip-out { opacity:0; transform:rotateY(90deg) scale(.85); transition:opacity .22s,transform .28s; }
+
+    /* ── CARD ── */
+    .playerCard {
+      background:var(--card);
+      border:1.5px solid var(--bclr, rgba(0,245,255,.22));
+      border-radius:18px;
+      padding:26px 20px 20px;
+      position:relative; text-align:left; overflow:hidden;
+      box-shadow:0 4px 28px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.03);
+      transition:transform .3s,box-shadow .3s;
+    }
+    .playerCard::before {
+      content:''; position:absolute; top:0;left:0;right:0; height:2px;
+      background:linear-gradient(90deg, var(--bclr,var(--cyan)), var(--pink));
+      border-radius:18px 18px 0 0;
+    }
+    .playerCard:hover {
+      transform:translateY(-7px) scale(1.02);
+      box-shadow:0 14px 40px rgba(0,0,0,.7),0 0 22px rgba(0,245,255,.12);
+    }
+    .pc-pos {
+      position:absolute; top:14px; right:16px;
+      font-family:'Orbitron',monospace; font-size:11px; color:rgba(0,245,255,.4);
+    }
+    .pc-icon { font-size:32px; margin-bottom:10px; filter:drop-shadow(0 0 6px rgba(0,245,255,.4)); }
+    .playerCard h3 {
+      font-family:'Orbitron',monospace; font-size:16px; font-weight:700;
+      color:var(--cyan); text-shadow:0 0 8px rgba(0,245,255,.3);
+      margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .pc-game {
+      display:inline-block; font-size:10px; font-weight:600;
+      letter-spacing:.12em; text-transform:uppercase;
+      color:var(--pink); border:1px solid rgba(255,0,200,.4);
+      padding:2px 10px; border-radius:4px; margin-bottom:12px;
+    }
+
+    /* ── BADGES ── */
+    .pc-badge {
+      display:inline-flex; align-items:center; gap:4px;
+      font-size:10px; font-weight:700; letter-spacing:.06em;
+      padding:4px 10px; border-radius:6px; margin-bottom:12px;
+      animation:badgePulse 2s infinite alternate;
+    }
+    @keyframes badgePulse {
+      from { filter:brightness(1); }
+      to   { filter:brightness(1.4) drop-shadow(0 0 5px currentColor); }
+    }
+    .badge-diamond  { background:linear-gradient(135deg,#0ff,#7fffd4,#0ff); color:#001a1a; box-shadow:0 0 14px rgba(0,255,255,.6),0 0 28px rgba(0,255,255,.25); }
+    .badge-conqueror{ background:linear-gradient(135deg,#ffd700,#ffaa00); color:#2a1500; box-shadow:0 0 14px rgba(255,215,0,.55); }
+    .badge-radiant  { background:linear-gradient(135deg,#ff00c8,#cc00aa); color:#fff; box-shadow:0 0 14px rgba(255,0,200,.55); }
+    .badge-elite    { background:rgba(0,245,255,.1); color:var(--cyan); border:1px solid var(--cyan); }
+
+    /* ── STATS ── */
+    .pc-stats { display:flex; gap:14px; margin:4px 0 12px; }
+    .pc-stat  { flex:1; }
+    .stat-label { display:block; font-size:10px; color:rgba(255,255,255,.38); text-transform:uppercase; letter-spacing:.08em; margin-bottom:2px; }
+    .stat-val   { font-size:13px; font-weight:600; color:#f0f4ff; }
+    .score-val  { color:var(--gold); }
+
+    .pc-bar  { height:4px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden; }
+    .pc-fill { height:100%; background:linear-gradient(90deg,var(--cyan),var(--pink)); box-shadow:0 0 6px var(--cyan); border-radius:999px; }
+    .pc-pct  { font-size:10px; color:rgba(255,255,255,.28); text-align:right; margin-top:4px; }
+
+    .no-results { grid-column:1/-1; padding:60px 20px; color:rgba(255,255,255,.38); font-size:17px; }
+    .no-results span { font-size:40px; display:block; margin-bottom:12px; }
+
+    /* ── FOOTER ── */
+    footer { width:100%; text-align:center; padding:20px; font-size:13px; color:#94a3b8; background:rgba(0,0,0,.6); border-top:1px solid rgba(0,245,255,.2); margin-top:40px; }
+
+    @media(max-width:600px){
+      .players-page{padding:110px 18px 60px;}
+      .filter-bar select,.filter-bar input,.search-wrap{flex-basis:100%;}
+      header nav a { margin-left:10px; font-size:12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">🚇 Subway Surfers Tournament</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="schedule.html">Schedule</a>
+      <a href="player.html">Players</a>
+      <a href="players.html" class="active">🔍 Search Players</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="Tournament.html">Tournament</a>
+      <a href="contact.html">Contact</a>
+      <a href="signup.html">Sign Up</a>
+      <a href="login.html">Login</a>
+    </nav>
+  </header>
+
+  <div class="players-page">
+    <h1>⚔️ Top Players</h1>
+    <p class="subtitle">Search, filter &amp; explore ranked players in real-time</p>
+
+    <div class="filter-bar">
+      <div class="search-wrap">
+        <span class="si">🔍</span>
+        <input type="text" id="searchName" placeholder="Search player by name…" autocomplete="off"/>
+      </div>
+      <select id="filterGame"><option value="">🎮 All Games</option></select>
+      <select id="filterRank"><option value="">🏅 All Ranks</option></select>
+      <button class="btn-clear" id="clearFilters">✕ Clear</button>
+    </div>
+
+    <div id="resultCount"></div>
+    <div id="playersContainer"></div>
+  </div>
+
+  <footer>© 2026 Subway Surfers Tournament</footer>
+
+  <script>
+    var gameIcons = {"Valorant":"🔫","PUBG":"🪖","Fortnite":"⚡","Apex Legends":"🔥","Call of Duty":"💀"};
+    var rankTiers = ["Predator","Conqueror","Radiant","Legendary","Champion","Immortal","Diamond","Platinum","Gold","Silver","Bronze"];
+    var allPlayers = [
+      {"name":"PhantomX",   "game":"Valorant",    "rank":"Radiant",   "score":4800},
+      {"name":"StormRider", "game":"PUBG",         "rank":"Conqueror", "score":5200},
+      {"name":"IceBreaker", "game":"Fortnite",     "rank":"Champion",  "score":4100},
+      {"name":"DarkMatter", "game":"Apex Legends", "rank":"Predator",  "score":6300},
+      {"name":"CyberWolf",  "game":"Call of Duty", "rank":"Legendary", "score":3900},
+      {"name":"NeonBlade",  "game":"Valorant",     "rank":"Immortal",  "score":4400}
+    ];
+
+    window.addEventListener('DOMContentLoaded', function() {
+      buildFilters();
+      renderCards(allPlayers);
+      updateCount(allPlayers.length);
+      document.getElementById('searchName').addEventListener('input',  applyFilters);
+      document.getElementById('filterGame').addEventListener('change', applyFilters);
+      document.getElementById('filterRank').addEventListener('change', applyFilters);
+      document.getElementById('clearFilters').addEventListener('click', clearAll);
+    });
+
+    function buildFilters() {
+      var games = [...new Set(allPlayers.map(function(p){return p.game;}))].sort();
+      var ranks = [...new Set(allPlayers.map(function(p){return p.rank;}))]
+        .sort(function(a,b){ var ai=rankTiers.indexOf(a),bi=rankTiers.indexOf(b); return (ai<0?99:ai)-(bi<0?99:bi); });
+      var gs = document.getElementById('filterGame');
+      games.forEach(function(g){ var o=document.createElement('option'); o.value=g; o.textContent=(gameIcons[g]||'🎮')+'  '+g; gs.appendChild(o); });
+      var rs = document.getElementById('filterRank');
+      ranks.forEach(function(r){ var o=document.createElement('option'); o.value=r; o.textContent=r; rs.appendChild(o); });
+    }
+
+    function applyFilters() {
+      var q=document.getElementById('searchName').value.trim().toLowerCase();
+      var g=document.getElementById('filterGame').value;
+      var r=document.getElementById('filterRank').value;
+      var out=allPlayers.filter(function(p){ return p.name.toLowerCase().includes(q)&&(!g||p.game===g)&&(!r||p.rank===r); });
+      if(r||q) out.sort(function(a,b){return b.score-a.score;});
+      updateCount(out.length); renderCards(out);
+    }
+
+    function clearAll() {
+      document.getElementById('searchName').value='';
+      document.getElementById('filterGame').value='';
+      document.getElementById('filterRank').value='';
+      updateCount(allPlayers.length); renderCards(allPlayers);
+    }
+
+    function updateCount(n) {
+      document.getElementById('resultCount').textContent = n===0?'No players found':n+' player'+(n!==1?'s':'')+' found';
+    }
+
+    function getBadge(rank) {
+      var t=rankTiers.indexOf(rank);
+      if(t===0) return {label:'💎 DIAMOND ELITE',cls:'badge-diamond', bc:'#b9f2ff'};
+      if(t===1) return {label:'🏆 CONQUEROR',    cls:'badge-conqueror',bc:'#ffd700'};
+      if(t===2) return {label:'✨ RADIANT',       cls:'badge-radiant',  bc:'#ff00c8'};
+      if(t<=4)  return {label:'⚡ ELITE',         cls:'badge-elite',    bc:'#00f5ff'};
+      return null;
+    }
+
+    var flipTimer=null;
+    function renderCards(players) {
+      var container=document.getElementById('playersContainer');
+      var existing=container.querySelectorAll('.cardWrap');
+      existing.forEach(function(c){c.classList.add('flip-out');});
+      clearTimeout(flipTimer);
+      flipTimer=setTimeout(function(){
+        container.innerHTML='';
+        if(!players.length){
+          container.innerHTML="<div class='no-results'><span>🔍</span><p>No players match your search.</p></div>";
+          return;
+        }
+        var sorted=players.slice().sort(function(a,b){return b.score-a.score;});
+        sorted.forEach(function(p,i){
+          var icon=gameIcons[p.game]||'🎮';
+          var badge=getBadge(p.rank);
+          var bc=badge?badge.bc:'rgba(0,245,255,0.25)';
+          var pct=Math.min((p.score/7000)*100,100).toFixed(1);
+          var wrap=document.createElement('div');
+          wrap.className='cardWrap';
+          wrap.innerHTML=
+            "<div class='playerCard' style='--bclr:"+bc+"'>"+
+              "<div class='pc-pos'>#"+(i+1)+"</div>"+
+              "<div class='pc-icon'>"+icon+"</div>"+
+              "<h3>"+p.name+"</h3>"+
+              "<span class='pc-game'>"+p.game+"</span>"+
+              (badge?"<div class='pc-badge "+badge.cls+"'>"+badge.label+"</div>":"")+
+              "<div class='pc-stats'>"+
+                "<div class='pc-stat'><span class='stat-label'>Rank</span><span class='stat-val'>"+p.rank+"</span></div>"+
+                "<div class='pc-stat'><span class='stat-label'>Score</span><span class='stat-val score-val'>"+p.score.toLocaleString()+"</span></div>"+
+              "</div>"+
+              "<div class='pc-bar'><div class='pc-fill' style='width:"+pct+"%'></div></div>"+
+              "<div class='pc-pct'>"+pct+"% mastery</div>"+
+            "</div>";
+          container.appendChild(wrap);
+          setTimeout(function(){wrap.classList.add('flip-in');},i*80);
+        });
+      }, existing.length>0?280:0);
+    }
+  </script>
+</body>
+</html>

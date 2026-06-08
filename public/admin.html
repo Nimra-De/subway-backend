@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel — Subway Surfers Tournament</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Admin-specific styles ── */
+    .admin-wrapper {
+      width: 100%;
+      max-width: 1200px;
+      margin: 100px auto 60px;
+      padding: 0 20px;
+    }
+
+    .admin-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #00f5ff;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .admin-subtitle {
+      text-align: center;
+      color: #94a3b8;
+      margin-bottom: 30px;
+      font-size: 0.9rem;
+    }
+
+    /* ── Stats bar ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+    .stat-card {
+      background: rgba(0,245,255,0.07);
+      border: 1px solid rgba(0,245,255,0.25);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+    .stat-card .val { font-size: 2rem; font-weight: 800; color: #00f5ff; }
+    .stat-card .lbl { font-size: 0.78rem; color: #94a3b8; margin-top: 4px; }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.08);
+      color: #e2e8f0;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .tab-btn.active, .tab-btn:hover {
+      background: #00f5ff;
+      color: #0f172a;
+    }
+
+    /* ── Panels ── */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ── Section header ── */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .section-header h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    /* ── Forms ── */
+    .card-form {
+      background: rgba(15,23,42,0.85);
+      border: 1px solid rgba(0,245,255,0.2);
+      border-radius: 14px;
+      padding: 28px;
+      margin-bottom: 28px;
+    }
+    .card-form h3 {
+      color: #00f5ff;
+      font-size: 1rem;
+      margin-bottom: 18px;
+      font-weight: 700;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 0.8rem; color: #94a3b8; font-weight: 600; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #f8fafc;
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: #00f5ff; }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .form-group select option { background: #0f172a; }
+
+    /* ── Buttons ── */
+    .btn {
+      padding: 10px 22px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-primary  { background: #00f5ff; color: #0f172a; }
+    .btn-danger   { background: #ef4444; color: #fff; }
+    .btn-warning  { background: #f59e0b; color: #0f172a; }
+    .btn-success  { background: #10b981; color: #fff; }
+    .btn-sm { padding: 6px 12px; font-size: 0.78rem; }
+    .btn:hover { opacity: .85; transform: translateY(-1px); }
+
+    /* ── Table ── */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid rgba(0,245,255,0.15);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: rgba(0,245,255,0.1); }
+    th {
+      padding: 12px 14px;
+      text-align: left;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #00f5ff;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    td {
+      padding: 12px 14px;
+      font-size: 0.83rem;
+      color: #cbd5e1;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    tr:hover td { background: rgba(0,245,255,0.04); }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .badge-green  { background: rgba(16,185,129,.2); color: #10b981; border: 1px solid #10b981; }
+    .badge-yellow { background: rgba(245,158,11,.2);  color: #f59e0b; border: 1px solid #f59e0b; }
+    .badge-red    { background: rgba(239,68,68,.2);   color: #ef4444; border: 1px solid #ef4444; }
+    .badge-blue   { background: rgba(59,130,246,.2);  color: #60a5fa; border: 1px solid #60a5fa; }
+    .badge-cyan   { background: rgba(0,245,255,.15);  color: #00f5ff; border: 1px solid #00f5ff; }
+
+    /* ── Alert ── */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 0.88rem;
+      display: none;
+    }
+    .alert-success { background: rgba(16,185,129,.15); border: 1px solid #10b981; color: #10b981; }
+    .alert-error   { background: rgba(239,68,68,.15);  border: 1px solid #ef4444; color: #ef4444; }
+    .alert.show { display: block; }
+
+    /* ── Filter bar ── */
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .filter-bar select, .filter-bar input {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #f8fafc;
+      font-size: 0.84rem;
+    }
+    .filter-bar select option { background: #0f172a; }
+
+    /* ── Access denied ── */
+    #access-denied {
+      display: none;
+      text-align: center;
+      margin-top: 180px;
+      color: #ef4444;
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="logo">🚇 Subway Surfers</div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="players.html">Players</a>
+    <a href="leaderboard.html">Leaderboard</a>
+    <a href="schedule.html">Tournaments</a>
+    <a href="admin.html" style="color:#00f5ff;">Admin</a>
+  </nav>
+</header>
+
+<script src="api.js"></script>
+
+<!-- ── ACCESS DENIED ── -->
+<div id="access-denied">
+  🚫 Access Denied — Admins Only
+  <br/><a href="login.html" style="color:#00f5ff; font-size:1rem;">Login as Admin</a>
+</div>
+
+<!-- ── MAIN ADMIN WRAPPER ── -->
+<div class="admin-wrapper" id="admin-main" style="display:none;">
+
+  <h1 class="admin-title">⚙️ Admin Control Panel</h1>
+  <p class="admin-subtitle">Manage tournaments, registrations, and players</p>
+
+  <!-- Stats -->
+  <div class="stats-grid" id="stats-grid">
+    <div class="stat-card"><div class="val" id="s-tournaments">—</div><div class="lbl">Tournaments</div></div>
+    <div class="stat-card"><div class="val" id="s-total">—</div><div class="lbl">Total Registrations</div></div>
+    <div class="stat-card"><div class="val" id="s-confirmed">—</div><div class="lbl">Confirmed</div></div>
+    <div class="stat-card"><div class="val" id="s-pending">—</div><div class="lbl">Pending</div></div>
+    <div class="stat-card"><div class="val" id="s-paid">—</div><div class="lbl">Paid</div></div>
+    <div class="stat-card"><div class="val" id="s-revenue">—</div><div class="lbl">Revenue (USD)</div></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('tab-tournaments', this)">🏆 Tournaments</button>
+    <button class="tab-btn" onclick="switchTab('tab-registrations', this)">📋 Registrations</button>
+    <button class="tab-btn" onclick="switchTab('tab-players', this)">👥 Players</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       TAB 1 — TOURNAMENTS
+  ══════════════════════════════════════════════════════ -->
+  <div id="tab-tournaments" class="panel active">
+
+    <!-- Create Tournament Form -->
+    <div class="card-form">
+      <h3>➕ Create New Tournament</h3>
+      <div id="t-alert" class="alert"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tournament Name *</label>
+          <input type="text" id="t-name" placeholder="e.g. Summer Cup 2026" />
+        </div>
+        <div class="form-group">
+          <label>Prize Pool (USD)</label>
+          <input type="number" id="t-prize" placeholder="0" min="0" />
+        </div>
+        <div class="form-group">
+          <label>Max Players</label>
+          <input type="number" id="t-max" placeholder="32" min="2" max="256" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Start Date *</label>
+          <input type="datetime-local" id="t-start" />
+        </div>
+        <div class="form-group">
+          <label>End Date</label>
+          <input type="datetime-local" id="t-end" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="t-desc" placeholder="Tournament details..."></textarea>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="createTournament()">🚀 Create Tournament</button>
+    </div>
+
+    <!-- Tournament List -->
+    <div class="section-header">
+      <h2>All Tournaments</h2>
+      <button class="btn btn-primary btn-sm" onclick="loadTournaments()">🔄 Refresh</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Players</th>
+            <th>Prize</th>
+            <th>Start Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tournaments-tbody">
+          <tr><td colspan="6" style="text-align:center; color:#64748b;">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       TAB 2 — REGISTRATIONS
+  ══════════════════════════════════════════════════════ -->
+  <div id="tab-registrations" class="panel">
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <select id="reg-filter-status" onchange="loadRegistrations()">
+        <option value="">All Statuses</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="pending">Pending</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+      <select id="reg-filter-payment" onchange="loadRegistrations()">
+        <option value="">All Payments</option>
+        <option value="Paid">Paid</option>
+        <option value="Unpaid">Unpaid</option>
+        <option value="Pending">Pending</option>
+        <option value="Refunded">Refunded</option>
+      </select>
+      <button class="btn btn-primary btn-sm" onclick="loadRegistrations()">🔄 Refresh</button>
+    </div>
+
+    <div id="reg-alert" class="alert"></div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Tournament</th>
+            <th>Country</th>
+            <th>Status</th>
+            <th>Payment</th>
+            <th>Method</th>
+            <th>Tx ID</th>
+            <th>Registered</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="registrations-tbody">
+          <tr><td colspan="9" style="text-align:center; color:#64748b;">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       TAB 3 — PLAYERS
+  ══════════════════════════════════════════════════════ -->
+  <div id="tab-players" class="panel">
+    <div class="section-header">
+      <h2>Registered Players</h2>
+      <button class="btn btn-primary btn-sm" onclick="loadPlayers()">🔄 Refresh</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Country</th>
+            <th>Role</th>
+            <th>High Score</th>
+            <th>Wins</th>
+            <th>Joined</th>
+          </tr>
+        </thead>
+        <tbody id="players-tbody">
+          <tr><td colspan="7" style="text-align:center; color:#64748b;">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /admin-wrapper -->
+
+
+<script>
+// ── Tab switching ────────────────────────────────────────────
+function switchTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  // Lazy-load data
+  if (id === 'tab-tournaments')   loadTournaments();
+  if (id === 'tab-registrations') loadRegistrations();
+  if (id === 'tab-players')       loadPlayers();
+}
+
+// ── Alert helper ─────────────────────────────────────────────
+function showAlert(id, msg, type = 'success') {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = `alert alert-${type} show`;
+  setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+// ── Badge helper ─────────────────────────────────────────────
+function statusBadge(status) {
+  const map = {
+    upcoming:  'badge-yellow', active: 'badge-green', completed: 'badge-blue',
+    confirmed: 'badge-green',  pending: 'badge-yellow', cancelled: 'badge-red',
+    Paid:  'badge-green', Unpaid: 'badge-red', Pending: 'badge-yellow', Refunded: 'badge-blue'
+  };
+  return `<span class="badge ${map[status] || 'badge-cyan'}">${status}</span>`;
+}
+
+// ── Date formatter ───────────────────────────────────────────
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-US', { day:'numeric', month:'short', year:'numeric' });
+}
+
+// ══════════════════════════════════════════════════════════════
+//  STATS
+// ══════════════════════════════════════════════════════════════
+async function loadStats() {
+  try {
+    const [tData, rData] = await Promise.all([
+      API.getTournaments(),
+      API.getRegistrationStats()
+    ]);
+    document.getElementById('s-tournaments').textContent = tData.tournaments.length;
+    document.getElementById('s-total').textContent       = rData.total;
+    document.getElementById('s-confirmed').textContent   = rData.confirmed;
+    document.getElementById('s-pending').textContent     = rData.pending;
+    document.getElementById('s-paid').textContent        = rData.paid;
+    document.getElementById('s-revenue').textContent     = '$' + (rData.totalRevenue || 0);
+  } catch (e) { /* silently fail stats */ }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  TOURNAMENTS
+// ══════════════════════════════════════════════════════════════
+async function loadTournaments() {
+  const tbody = document.getElementById('tournaments-tbody');
+  try {
+    const data = await API.getTournaments();
+    if (!data.tournaments.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#64748b;">No tournaments yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.tournaments.map(t => `
+      <tr>
+        <td><strong style="color:#f8fafc;">${t.name}</strong>
+          <div style="font-size:.72rem; color:#64748b;">${t.description || ''}</div>
+        </td>
+        <td>${statusBadge(t.status)}</td>
+        <td>${(t.players?.length || 0)} / ${t.maxPlayers}</td>
+        <td style="color:#00f5ff;">$${t.prizePool}</td>
+        <td>${fmtDate(t.startDate)}</td>
+        <td>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <select id="status-${t._id}" class="filter-bar" style="padding:4px 8px; font-size:.75rem;">
+              <option value="upcoming" ${t.status==='upcoming'?'selected':''}>Upcoming</option>
+              <option value="active"   ${t.status==='active'  ?'selected':''}>Active</option>
+              <option value="completed"${t.status==='completed'?'selected':''}>Completed</option>
+            </select>
+            <button class="btn btn-warning btn-sm" onclick="changeStatus('${t._id}')">Update</button>
+            <button class="btn btn-danger  btn-sm" onclick="deleteTournament('${t._id}', '${t.name}')">Delete</button>
+          </div>
+        </td>
+      </tr>`).join('');
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="6" style="color:#ef4444; text-align:center;">Error: ${e.message}</td></tr>`;
+  }
+}
+
+async function createTournament() {
+  const name   = document.getElementById('t-name').value.trim();
+  const start  = document.getElementById('t-start').value;
+  if (!name || !start) return showAlert('t-alert', 'Name and Start Date are required.', 'error');
+
+  try {
+    await API.createTournament({
+      name,
+      description: document.getElementById('t-desc').value.trim(),
+      startDate:   start,
+      endDate:     document.getElementById('t-end').value || undefined,
+      prizePool:   Number(document.getElementById('t-prize').value) || 0,
+      maxPlayers:  Number(document.getElementById('t-max').value)   || 32
+    });
+    showAlert('t-alert', '✅ Tournament created!');
+    // Clear form
+    ['t-name','t-desc','t-prize','t-max','t-start','t-end'].forEach(id => document.getElementById(id).value = '');
+    loadTournaments();
+    loadStats();
+  } catch (e) { showAlert('t-alert', e.message, 'error'); }
+}
+
+async function changeStatus(id) {
+  const status = document.getElementById('status-' + id).value;
+  try {
+    await API.updateTournamentStatus(id, { status });
+    showAlert('t-alert', '✅ Status updated to: ' + status);
+    loadTournaments();
+    loadStats();
+  } catch (e) { showAlert('t-alert', e.message, 'error'); }
+}
+
+async function deleteTournament(id, name) {
+  if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+  try {
+    await API.deleteTournament(id);
+    showAlert('t-alert', '✅ Tournament deleted.');
+    loadTournaments();
+    loadStats();
+  } catch (e) { showAlert('t-alert', e.message, 'error'); }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  REGISTRATIONS
+// ══════════════════════════════════════════════════════════════
+async function loadRegistrations() {
+  const tbody = document.getElementById('registrations-tbody');
+  const statusFilter  = document.getElementById('reg-filter-status').value;
+  const paymentFilter = document.getElementById('reg-filter-payment').value;
+
+  try {
+    const params = {};
+    if (statusFilter)  params.status = statusFilter;
+    const data = await API.getRegistrations(params);
+    let regs = data.registrations;
+    // Client-side payment filter
+    if (paymentFilter) regs = regs.filter(r => r.paymentStatus === paymentFilter);
+
+    if (!regs.length) {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:#64748b;">No registrations found.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = regs.map(r => `
+      <tr>
+        <td>
+          <strong style="color:#f8fafc;">${r.playerName}</strong>
+          <div style="font-size:.7rem; color:#64748b;">${r.email}</div>
+        </td>
+        <td style="color:#00f5ff;">${r.tournament?.name || '—'}</td>
+        <td>${r.country}</td>
+        <td>${statusBadge(r.status)}</td>
+        <td>${statusBadge(r.paymentStatus)}</td>
+        <td><span class="badge badge-cyan">${r.paymentMethod}</span></td>
+        <td style="font-size:.7rem; color:#64748b; max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${r.transactionId}">${r.transactionId || '—'}</td>
+        <td>${fmtDate(r.registeredAt)}</td>
+        <td>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button class="btn btn-success btn-sm" onclick="confirmReg('${r._id}')">✔ Confirm</button>
+            <button class="btn btn-danger  btn-sm" onclick="deleteReg('${r._id}')">✖ Delete</button>
+          </div>
+        </td>
+      </tr>`).join('');
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="9" style="color:#ef4444; text-align:center;">Error: ${e.message}</td></tr>`;
+  }
+}
+
+async function confirmReg(id) {
+  try {
+    await API.updateRegistration(id, { status: 'confirmed', paymentStatus: 'Paid' });
+    showAlert('reg-alert', '✅ Registration confirmed & marked Paid.');
+    loadRegistrations();
+    loadStats();
+  } catch (e) { showAlert('reg-alert', e.message, 'error'); }
+}
+
+async function deleteReg(id) {
+  if (!confirm('Delete this registration record?')) return;
+  try {
+    await API.deleteRegistration(id);
+    showAlert('reg-alert', '✅ Registration deleted.');
+    loadRegistrations();
+    loadStats();
+  } catch (e) { showAlert('reg-alert', e.message, 'error'); }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  PLAYERS
+// ══════════════════════════════════════════════════════════════
+async function loadPlayers() {
+  const tbody = document.getElementById('players-tbody');
+  try {
+    const data = await API.getPlayers({ limit: 100 });
+    const players = data.players || data;
+    if (!players.length) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#64748b;">No players yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = players.map(p => `
+      <tr>
+        <td><strong style="color:#f8fafc;">${p.firstName} ${p.lastName}</strong></td>
+        <td style="color:#64748b; font-size:.8rem;">${p.email}</td>
+        <td>${p.country || '—'}</td>
+        <td>${p.role === 'admin'
+          ? '<span class="badge badge-cyan">Admin</span>'
+          : '<span class="badge badge-blue">Player</span>'}</td>
+        <td style="color:#00f5ff;">${p.highScore?.toLocaleString() || 0}</td>
+        <td>${p.wins || 0}</td>
+        <td>${fmtDate(p.createdAt)}</td>
+      </tr>`).join('');
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="7" style="color:#ef4444; text-align:center;">Error: ${e.message}</td></tr>`;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  INIT — check admin access
+// ══════════════════════════════════════════════════════════════
+(async function init() {
+  if (!Auth.isLoggedIn()) {
+    window.location.href = 'login.html';
+    return;
+  }
+  try {
+    const me = await API.getMe();
+    const user = me.user || me;
+    if (user.role !== 'admin') {
+      document.getElementById('access-denied').style.display = 'block';
+      return;
+    }
+    document.getElementById('admin-main').style.display = 'block';
+    loadStats();
+    loadTournaments();
+  } catch (e) {
+    window.location.href = 'login.html';
+  }
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,635 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Tournament Registration – Subway Surfers</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+
+        /* ── Override body flex from style.css ── */
+        body {
+            display: block !important;
+            height: auto !important;
+            min-height: 100vh;
+        }
+
+        /* ── Full-width page wrapper ── */
+        .page-wrap {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ══════════════ HERO ══════════════ */
+        .t-hero {
+            width: 100%;
+            padding: 110px 20px 44px;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.90) 100%);
+        }
+
+            .t-hero h1 {
+                font-size: clamp(32px, 5vw, 56px);
+                font-weight: 800;
+                color: #ffea00;
+                text-shadow: 0 0 12px #ff00c8, 0 0 32px #00f5ff;
+                margin-bottom: 10px;
+                letter-spacing: 1px;
+                line-height: 1.15;
+            }
+
+            .t-hero p {
+                color: #00f5ff;
+                font-size: 16px;
+                font-weight: 500;
+            }
+
+        /* ══════════════ CONTENT AREA ══════════════ */
+        .t-body {
+            width: 100%;
+            max-width: 960px;
+            padding: 28px 24px 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ══════════════ STATS CARD ══════════════ */
+        .stats-card {
+            width: 100%;
+            background: rgba(0,0,0,0.72);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            padding: 24px 30px;
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .counter-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .c-badge {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 11px 26px;
+            border-radius: 50px;
+            font-size: 15px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+            .c-badge.cyan {
+                background: rgba(0,245,255,0.07);
+                border: 2px solid #00f5ff;
+                color: #00f5ff;
+                box-shadow: 0 0 16px rgba(0,245,255,0.18);
+            }
+
+            .c-badge.pink {
+                background: rgba(255,0,200,0.07);
+                border: 2px solid #ff00c8;
+                color: #ff00c8;
+                box-shadow: 0 0 16px rgba(255,0,200,0.18);
+            }
+
+            .c-badge .num {
+                font-size: 22px;
+                color: #ffea00;
+                font-weight: 800;
+                line-height: 1;
+            }
+
+        .prog-outer {
+            width: 100%;
+            max-width: 520px;
+        }
+
+        .prog-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .prog-track {
+            width: 100%;
+            height: 9px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .prog-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00f5ff, #ff00c8);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 8px rgba(255,0,200,0.55);
+        }
+
+        /* ══════════════ TWO-COLUMN GRID ══════════════ */
+        .t-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+            align-items: start;
+        }
+
+        @media (max-width: 640px) {
+            .t-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ══════════════ PANELS ══════════════ */
+        .t-panel {
+            background: rgba(0,0,0,0.82);
+            border-radius: 18px;
+            padding: 28px 24px;
+        }
+
+            .t-panel.fp {
+                border: 1px solid rgba(0,245,255,0.22);
+                box-shadow: 0 0 28px rgba(0,245,255,0.06);
+            }
+
+            .t-panel.lp {
+                border: 1px solid rgba(255,0,200,0.22);
+                box-shadow: 0 0 28px rgba(255,0,200,0.06);
+            }
+
+        .ph {
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-align: center;
+            margin-bottom: 22px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .fp .ph {
+            color: #00f5ff;
+            text-shadow: 0 0 10px rgba(0,245,255,0.4);
+        }
+
+        .lp .ph {
+            color: #ff00c8;
+            text-shadow: 0 0 10px rgba(255,0,200,0.4);
+        }
+
+        /* ══════════════ FORM ══════════════ */
+        .fg {
+            margin-bottom: 15px;
+        }
+
+            .fg label {
+                display: block;
+                font-size: 11px;
+                color: #64748b;
+                font-weight: 600;
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+                margin-bottom: 6px;
+            }
+
+            .fg input,
+            .fg select {
+                width: 100%;
+                padding: 11px 14px;
+                background: rgba(255,255,255,0.05);
+                border: 1px solid rgba(255,255,255,0.1);
+                border-radius: 10px;
+                color: #fff;
+                font-size: 14px;
+                font-family: 'Poppins', sans-serif;
+                font-weight: 500;
+                outline: none;
+                transition: border-color 0.2s, box-shadow 0.2s;
+            }
+
+                .fg input::placeholder {
+                    color: #334155;
+                }
+
+                .fg input:focus,
+                .fg select:focus {
+                    border-color: #00f5ff;
+                    box-shadow: 0 0 0 3px rgba(0,245,255,0.1);
+                }
+
+                .fg select option {
+                    background: #0f1b2d;
+                }
+
+        .reg-btn {
+            width: 100%;
+            padding: 13px;
+            margin-top: 6px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ff00c8, #7c00ff);
+            color: white;
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 4px 18px rgba(255,0,200,0.35);
+            font-family: 'Poppins', sans-serif;
+        }
+
+            .reg-btn:hover:not(:disabled) {
+                background: linear-gradient(135deg, #ffea00, #ff6600);
+                color: #000;
+                box-shadow: 0 4px 22px rgba(255,234,0,0.45);
+                transform: translateY(-2px);
+            }
+
+            .reg-btn:disabled {
+                opacity: 0.35;
+                cursor: not-allowed;
+                transform: none;
+            }
+
+        #formMsg {
+            margin-top: 11px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            min-height: 18px;
+        }
+
+        .msg-success {
+            color: #00e676;
+        }
+
+        .msg-error {
+            color: #ff6b6b;
+        }
+
+        /* ══════════════ PARTICIPANTS ══════════════ */
+        .p-list {
+            list-style: none;
+            overflow-y: auto;
+            max-height: 380px;
+            padding-right: 3px;
+        }
+
+            .p-list::-webkit-scrollbar {
+                width: 4px;
+            }
+
+            .p-list::-webkit-scrollbar-thumb {
+                background: #ff00c8;
+                border-radius: 10px;
+            }
+
+        .p-item {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 12px;
+            padding: 12px 13px;
+            margin-bottom: 9px;
+            animation: slIn 0.28s ease;
+        }
+
+        @keyframes slIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .p-av {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff00c8, #00f5ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 13px;
+            color: #000;
+            flex-shrink: 0;
+        }
+
+        .p-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .p-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #f1f5f9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .p-meta {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            margin-top: 4px;
+        }
+
+        .rtag {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+
+        .rtag-Beginner {
+            background: rgba(0,230,118,0.1);
+            color: #00e676;
+            border: 1px solid #00e676;
+        }
+
+        .rtag-Intermediate {
+            background: rgba(0,245,255,0.1);
+            color: #00f5ff;
+            border: 1px solid #00f5ff;
+        }
+
+        .rtag-Pro {
+            background: rgba(255,234,0,0.1);
+            color: #ffea00;
+            border: 1px solid #ffea00;
+        }
+
+        .rtag-Legend {
+            background: rgba(255,0,200,0.1);
+            color: #ff00c8;
+            border: 1px solid #ff00c8;
+        }
+
+        .p-date {
+            font-size: 10px;
+            color: #475569;
+        }
+
+        .p-del {
+            width: 27px;
+            height: 27px;
+            border-radius: 50%;
+            background: rgba(255,107,107,0.08);
+            border: 1px solid rgba(255,107,107,0.35);
+            color: #ff6b6b;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            flex-shrink: 0;
+            padding: 0;
+            margin: 0;
+            line-height: 1;
+        }
+
+            .p-del:hover {
+                background: #ff6b6b;
+                color: #fff;
+                border-color: #ff6b6b;
+                transform: scale(1.12);
+            }
+
+        .empty-wrap {
+            text-align: center;
+            padding: 40px 0;
+            color: #334155;
+        }
+
+            .empty-wrap .ei {
+                font-size: 42px;
+                display: block;
+                margin-bottom: 10px;
+            }
+
+            .empty-wrap p {
+                font-size: 13px;
+            }
+
+        /* ══════════════ FOOTER ══════════════ */
+        footer {
+            width: 100%;
+            text-align: center;
+            padding: 20px;
+            font-size: 13px;
+            color: #334155;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <header>
+        <div class="logo">🚇 Subway Surfers Tournament</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="schedule.html">Schedule</a>
+            <a href="player.html">Players</a>
+            <a href="tournament.html" style="color:#ffea00;">Tournament</a>
+            <a href="contact.html">Contact</a>
+            <a href="leaderboard.html">Leaderboard</a>
+            <a href="signup.html">Sign Up</a>
+            <a href="login.html">Login</a>
+        </nav>
+    </header>
+
+    <div class="page-wrap">
+
+        <!-- HERO BANNER -->
+        <div class="t-hero">
+            <h1>🏆 Tournament Registration</h1>
+            <p>Register now and compete for the Subway Surfers crown!</p>
+        </div>
+
+        <!-- CENTERED CONTENT -->
+        <div class="t-body">
+
+            <!-- STATS CARD -->
+            <div class="stats-card">
+                <div class="counter-row">
+                    <div class="c-badge cyan">
+                        👥 Total Registered:&nbsp;<span class="num" id="totalCount">0</span>
+                    </div>
+                    <div class="c-badge pink">
+                        🎫 Slots Left:&nbsp;<span class="num" id="slotsLeft">10</span>&nbsp;/ 10
+                    </div>
+                </div>
+                <div class="prog-outer">
+                    <div class="prog-meta">
+                        <span id="progressLabel">0 of 10 slots filled</span>
+                        <span id="progressPct">0%</span>
+                    </div>
+                    <div class="prog-track">
+                        <div class="prog-fill" id="progressFill" style="width:0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FORM + LIST GRID -->
+            <div class="t-grid">
+
+                <!-- REGISTER FORM -->
+                <div class="t-panel fp">
+                    <div class="ph">✍️ Register Player</div>
+
+                    <div class="fg">
+                        <label>Full Name</label>
+                        <input type="text" id="playerName" placeholder="Enter your name" maxlength="40">
+                    </div>
+                    <div class="fg">
+                        <label>Email Address</label>
+                        <input type="email" id="playerEmail" placeholder="Enter your email">
+                    </div>
+                    <div class="fg">
+                        <label>Skill Level</label>
+                        <select id="playerRank">
+                            <option value="">— Select skill level —</option>
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Pro">Pro</option>
+                            <option value="Legend">Legend</option>
+                        </select>
+                    </div>
+
+                    <button class="reg-btn" id="registerBtn" onclick="registerPlayer()">
+                        ⚡ Register Now
+                    </button>
+                    <div id="formMsg"></div>
+                </div>
+
+                <!-- PARTICIPANTS LIST -->
+                <div class="t-panel lp">
+                    <div class="ph">🎮 Participants List</div>
+                    <ul class="p-list" id="pList">
+                        <li class="empty-wrap" id="emptyState">
+                            <span class="ei">🕹️</span>
+                            <p>No players yet — be the first!</p>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <footer>© 2026 Subway Surfers Tournament</footer>
+    </div>
+
+    <script>
+        const MAX = 10;
+        const getPlayers = () => JSON.parse(localStorage.getItem('tournamentPlayers') || '[]');
+        const savePlayers = p => localStorage.setItem('tournamentPlayers', JSON.stringify(p));
+
+        function showMsg(text, type) {
+            const el = document.getElementById('formMsg');
+            el.textContent = text;
+            el.className = type === 'success' ? 'msg-success' : 'msg-error';
+            clearTimeout(el._t);
+            el._t = setTimeout(() => el.textContent = '', 3500);
+        }
+
+        function registerPlayer() {
+            const name = document.getElementById('playerName').value.trim();
+            const email = document.getElementById('playerEmail').value.trim();
+            const rank = document.getElementById('playerRank').value;
+
+            if (!name) return showMsg('⚠️ Please enter your name.', 'error');
+            if (!email || !email.includes('@')) return showMsg('⚠️ Please enter a valid email.', 'error');
+            if (!rank) return showMsg('⚠️ Please select a skill level.', 'error');
+
+            const players = getPlayers();
+            if (players.length >= MAX)
+                return showMsg('🚫 Tournament full! (10/10)', 'error');
+            if (players.find(p => p.email.toLowerCase() === email.toLowerCase()))
+                return showMsg('⚠️ Email already registered!', 'error');
+
+            players.push({
+                id: Date.now(),
+                name, email, rank,
+                date: new Date().toLocaleDateString()
+            });
+            savePlayers(players);
+
+            document.getElementById('playerName').value = '';
+            document.getElementById('playerEmail').value = '';
+            document.getElementById('playerRank').value = '';
+            showMsg('✅ Successfully registered!', 'success');
+            render();
+        }
+
+        function removePlayer(id) {
+            savePlayers(getPlayers().filter(p => p.id !== id));
+            render();
+        }
+
+        function render() {
+            const players = getPlayers();
+            const filled = players.length;
+            const pct = Math.round(filled / MAX * 100);
+
+            document.getElementById('totalCount').textContent = filled;
+            document.getElementById('slotsLeft').textContent = MAX - filled;
+            document.getElementById('progressFill').style.width = pct + '%';
+            document.getElementById('progressLabel').textContent = `${filled} of ${MAX} slots filled`;
+            document.getElementById('progressPct').textContent = pct + '%';
+            document.getElementById('registerBtn').disabled = filled >= MAX;
+
+            const list = document.getElementById('pList');
+            const empty = document.getElementById('emptyState');
+            list.querySelectorAll('.p-item').forEach(el => el.remove());
+
+            if (filled === 0) { empty.style.display = 'block'; return; }
+            empty.style.display = 'none';
+
+            players.forEach((p, i) => {
+                const initials = p.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+                const li = document.createElement('li');
+                li.className = 'p-item';
+                li.innerHTML = `
+                        <div class="p-av">${initials}</div>
+                        <div class="p-info">
+                            <div class="p-name">#${i + 1} ${p.name}</div>
+                            <div class="p-meta">
+                                <span class="rtag rtag-${p.rank}">${p.rank}</span>
+                                <span class="p-date">${p.date}</span>
+                            </div>
+                        </div>
+                        <button class="p-del" onclick="removePlayer(${p.id})" title="Remove">✕</button>
+                    `;
+                list.appendChild(li);
+            });
+        }
+
+        render();
+    </script>
+
+</body>
+</html>

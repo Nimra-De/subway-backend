@@ -1,0 +1,13 @@
+# Render uses this file to know how to build & start your app
+# Just push to GitHub — Render reads it automatically
+
+# Build command (install dependencies)
+# npm install
+
+# Start command
+# node server.js
+
+# Environment variables to set in Render dashboard:
+# MONGO_URI = your MongoDB Atlas connection string
+# JWT_SECRET = any long random string
+# PORT = (Render sets this automatically, don't override it)

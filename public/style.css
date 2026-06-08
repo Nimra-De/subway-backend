@@ -1,0 +1,353 @@
+/* ===== GOOGLE FONT ===== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+
+/* ===== GLOBAL ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: url('subway.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* ===== FULL PAGE DARK OVERLAY ===== */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 0;
+}
+
+body > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* ===== HEADER ===== */
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background: rgba(0, 0, 0, 0.80);
+    border-bottom: 2px solid #00f5ff;
+    color: white;
+    z-index: 10;
+}
+
+header .logo {
+    font-size: 22px;
+    font-weight: 800;
+    color: #00f5ff;
+    /* FIXED: removed heavy glow text-shadow */
+}
+
+header nav a {
+    color: #e2e8f0;
+    text-decoration: none;
+    margin-left: 14px;
+    font-weight: 400; /* FIXED: was invalid "13px" */
+    font-size: 14px;
+    transition: color 0.3s;
+}
+
+header nav a:hover {
+    color: #00e676;
+}
+
+/* ===== HERO SECTION ===== */
+.hero {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+/* FIXED: added hero-content wrapper with subtle bg for readability */
+.hero-content {
+    background: rgba(0, 0, 0, 0.45);
+    padding: 48px 56px;
+    border-radius: 16px;
+    border: 1px solid rgba(0, 245, 255, 0.2);
+    max-width: 700px;
+    width: 90%;
+}
+
+.hero h1 {
+    font-size: 62px;
+    font-weight: 800;
+    color: #ffea00;
+    line-height: 1.1;
+    /* FIXED: removed neon glow, simpler shadow for depth */
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.hero p {
+    font-size: 20px;
+    color: #00f5ff;
+    margin-top: 16px;
+}
+
+/* ===== PLAY BUTTON ===== */
+/* FIXED: scoped styles here, no longer affected by global button { width:100% } */
+.play-btn {
+    display: inline-block;        /* FIXED: keeps button to its content width */
+    margin-top: 30px;
+    padding: 14px 48px;
+    font-size: 18px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    background: #ff00c8;
+    border: none;
+    border-radius: 50px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s, transform 0.2s;
+    width: auto;                  /* FIXED: overrides global button width:100% */
+}
+
+.play-btn:hover {
+    background: #ffea00;
+    color: #111;
+    transform: scale(1.05);
+}
+
+/* ===== FORM SECTION ===== */
+.form-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+    margin-top: 120px;
+}
+
+form {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 30px;
+    width: 350px;
+    border-radius: 10px;
+    color: white;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #00e676;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 5px;
+    border: none;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* ===== GLOBAL BUTTON (forms only) ===== */
+/* FIXED: scoped to form buttons so it doesn't affect .play-btn */
+form button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #2979ff;
+    color: white;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+form button:hover {
+    background-color: #00e676;
+}
+
+/* ===== ERROR / SUCCESS MESSAGES ===== */
+.error {
+    color: #ff6b6b;
+    font-size: 12px;
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+
+#formMessage {
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* ===== PASSWORD STRENGTH BAR ===== */
+#strengthBar {
+    width: 100%;
+    height: 8px;
+    background: #555;
+    border-radius: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#strengthFill {
+    height: 100%;
+    width: 0%;
+    border-radius: 5px;
+}
+
+/* ===== PASSWORD TOGGLE ICON ===== */
+.password-container {
+    position: relative;
+}
+
+#togglePassword {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    cursor: pointer;
+}
+
+/* ===== TABLE ===== */
+table {
+    width: 80%;
+    margin: 50px auto;
+    border-collapse: collapse;
+    background: #1e293b;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th {
+    background: #00f5ff;
+    color: #0f172a;
+    padding: 15px;
+}
+
+td {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #334155;
+}
+
+.final {
+    background: #ff00c8;
+    color: white;
+    font-weight: bold;
+}
+
+/* ===== PLAYER GRID ===== */
+.players-section {
+    padding: 50px;
+    text-align: center;
+}
+
+.players-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    margin-top: 30px;
+}
+
+.card {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 15px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 0 10px rgba(0, 245, 255, 0.2);
+}
+
+.card img {
+    width: 100%;
+    height: 250px;
+    object-fit: contain;
+    background: #0f172a;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.card h3 {
+    margin-top: 15px;
+    color: #00f5ff;
+}
+
+.card p {
+    color: #ff00c8;
+    font-weight: bold;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 0, 200, 0.5);
+}
+
+/* ===== FOOTER ===== */
+/* FIXED: footer was missing all styles */
+footer {
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+    font-size: 13px;
+    color: #94a3b8;
+    background: rgba(0, 0, 0, 0.6);
+    border-top: 1px solid rgba(0, 245, 255, 0.2);
+    margin-top: auto;
+}
+
+/* ===== RESPONSIVE ===== */
+@media screen and (max-width: 768px) {
+    .hero h1 {
+        font-size: 40px;
+    }
+
+    .hero-content {
+        padding: 32px 24px;
+    }
+
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    header nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    header nav a {
+        margin-left: 0;
+    }
+
+    .players-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    form {
+        width: 90%;
+        padding: 20px;
+    }
+}
