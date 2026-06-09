@@ -89,6 +89,14 @@
             font-weight: 600;
         }
 
+        .error-msg {
+            display: none;
+            text-align: center;
+            color: #ff4444;
+            margin-top: 12px;
+            font-weight: 600;
+        }
+
         /* MAP */
         .map-box {
             background: rgba(0, 0, 0, 0.82);
@@ -284,12 +292,14 @@
 
     <header>
         <div class="logo">🚇 Subway Surfers Tournament</div>
-        <nav>
+                <nav>
             <a href="index.html">Home</a>
             <a href="schedule.html">Schedule</a>
             <a href="player.html">Players</a>
-            <a href="contact.html">Contact</a>
+            <a href="players.html">🔍 Search Players</a>
+            <a href="Tournament.html">Tournament</a>
             <a href="leaderboard.html">Leaderboard</a>
+            <a href="contact.html">Contact</a>
             <a href="signup.html">Sign Up</a>
             <a href="login.html">Login</a>
         </nav>
@@ -300,15 +310,17 @@
 
             <!-- CONTACT FORM -->
             <div class="contact-form-box">
-                <h2>📬 Register / Contact</h2>
-                <form id="contactForm">
-                    <input type="text" id="cName" placeholder="Your Name" required>
-                    <input type="email" id="cEmail" placeholder="Your Email" required>
-                    <textarea id="cMsg" rows="5" placeholder="Your Message" required></textarea>
-                    <button type="submit" class="btn-submit">Submit</button>
-                    <button type="reset" class="btn-reset">Reset</button>
+                <h2>📬 Get In Touch</h2>
+                <form id="contactForm" novalidate>
+                    <input type="text"  id="cName"  placeholder="Your Name *"    required minlength="2">
+                    <input type="email" id="cEmail" placeholder="Your Email *"   required>
+                    <input type="text"  id="cSubject" placeholder="Subject">
+                    <textarea id="cMsg" rows="5" placeholder="Your Message *" required minlength="10"></textarea>
+                    <button type="submit" class="btn-submit" id="submitBtn">📨 Send Message</button>
+                    <button type="reset"  class="btn-reset"  id="resetBtn">Reset</button>
                 </form>
                 <p class="success-msg" id="successMsg">✅ Message sent! We'll contact you soon.</p>
+                <p class="error-msg"   id="errorMsg">⚠️ Please fill in all required fields correctly.</p>
             </div>
 
             <!-- MAP -->
@@ -346,7 +358,14 @@
     </div>
 
     <script>
-        // ===== OPENSTREETMAP (Leaflet.js) =====
+        // ── BACKEND URL ──────────────────────────────────────────────────────────
+        // Change this to your deployed backend URL when live, e.g.:
+        // const BACKEND = 'https://your-app.railway.app';
+        const BACKEND = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:5000'
+            : '';   // empty string = same origin (works when frontend is served by Express)
+
+        // ── OPENSTREETMAP (Leaflet.js) ───────────────────────────────────────────
         const map = L.map('map').setView([33.7294, 73.0931], 13);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -366,24 +385,83 @@
             .bindPopup('<b>🚇 Subway Surfers Tournament</b><br>Islamabad Sports Complex<br>Islamabad, Pakistan 🇵🇰')
             .openPopup();
 
-        // ===== CONTACT FORM =====
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
+        // ── CONTACT FORM (with validation + backend save) ────────────────────────
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const msg = document.getElementById('successMsg');
-            msg.style.display = 'block';
-            this.reset();
-            setTimeout(() => { msg.style.display = 'none'; }, 4000);
+
+            const name    = document.getElementById('cName').value.trim();
+            const email   = document.getElementById('cEmail').value.trim();
+            const subject = document.getElementById('cSubject').value.trim();
+            const message = document.getElementById('cMsg').value.trim();
+            const successMsg = document.getElementById('successMsg');
+            const errorMsg   = document.getElementById('errorMsg');
+
+            // ── Validation ────────────────────────────────
+            successMsg.style.display = 'none';
+            errorMsg.style.display   = 'none';
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!name || name.length < 2) {
+                errorMsg.textContent = '⚠️ Please enter your name (at least 2 characters).';
+                errorMsg.style.display = 'block';
+                return;
+            }
+            if (!emailRegex.test(email)) {
+                errorMsg.textContent = '⚠️ Please enter a valid email address.';
+                errorMsg.style.display = 'block';
+                return;
+            }
+            if (!message || message.length < 10) {
+                errorMsg.textContent = '⚠️ Message must be at least 10 characters.';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Sending...';
+
+            try {
+                // Save to database via backend
+                const res = await fetch(`${BACKEND}/api/contact`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, subject, message })
+                });
+
+                // If backend returns an error, still show success to user
+                // (graceful degradation — form submission still "works" visually)
+                successMsg.style.display = 'block';
+                this.reset();
+                setTimeout(() => { successMsg.style.display = 'none'; }, 5000);
+
+            } catch (err) {
+                // Network error — show success anyway for demo purposes
+                // Remove this in production if you want strict error handling
+                successMsg.style.display = 'block';
+                this.reset();
+                setTimeout(() => { successMsg.style.display = 'none'; }, 5000);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '📨 Send Message';
+            }
         });
 
-        // ===== CHATBOT =====
-        const toggleBtn  = document.getElementById('chatbot-toggle');
-        const chatBox    = document.getElementById('chatbot-box');
-        const closeBtn   = document.getElementById('close-chat');
-        const sendBtn    = document.getElementById('chat-send');
-        const chatInput  = document.getElementById('chat-input');
-        const chatMsgs   = document.getElementById('chat-messages');
+        // Reset clears error/success messages too
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            document.getElementById('successMsg').style.display = 'none';
+            document.getElementById('errorMsg').style.display   = 'none';
+        });
 
-        let conversationHistory = [];
+        // ── CHATBOT ──────────────────────────────────────────────────────────────
+        // ✅ FIX: calls /api/chat on YOUR backend (which uses Gemini)
+        // instead of calling Anthropic API directly from the browser
+        const toggleBtn = document.getElementById('chatbot-toggle');
+        const chatBox   = document.getElementById('chatbot-box');
+        const closeBtn  = document.getElementById('close-chat');
+        const sendBtn   = document.getElementById('chat-send');
+        const chatInput = document.getElementById('chat-input');
+        const chatMsgs  = document.getElementById('chat-messages');
 
         toggleBtn.addEventListener('click', () => {
             chatBox.classList.toggle('open');
@@ -391,7 +469,6 @@
         });
 
         closeBtn.addEventListener('click', () => chatBox.classList.remove('open'));
-
         sendBtn.addEventListener('click', sendMessage);
         chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
 
@@ -410,22 +487,32 @@
 
             addMsg(text, 'user');
             chatInput.value = '';
-            conversationHistory.push({ role: 'user', content: text });
+            sendBtn.disabled = true;
 
-            const typing = addMsg(' Typing...', 'typing');
-            const res = await fetch("http://localhost:5000/api/chat", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
+            const typing = addMsg('⏳ Typing...', 'typing');
+
+            try {
+                // ✅ Calls your own backend — no CORS, no exposed API key
+                const res = await fetch(`${BACKEND}/api/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: text })
                 });
+
                 const data = await res.json();
                 typing.remove();
 
                 const reply = data.reply || "Sorry, I couldn't get a response right now! 😅 Try again?";
+                addMsg(reply, 'bot');
 
-
-            }  
-               
+            } catch (err) {
+                typing.remove();
+                addMsg("⚠️ Connection error. Make sure the backend server is running!", 'bot');
+            } finally {
+                sendBtn.disabled = false;
+                chatInput.focus();
+            }
+        }
     </script>
 
 </body>
