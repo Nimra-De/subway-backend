@@ -4,7 +4,7 @@
 // ============================================================
 
 // ── Change this ONE line when you deploy to Render ───────────
-const API_BASE = 'http://localhost:5000';
+const API_BASE = 'https://subway-backend-production-d2ac.up.railway.app';
 // After deploy:  const API_BASE = 'https://your-app-name.onrender.com';
 
 // ── Auth helpers ─────────────────────────────────────────────
