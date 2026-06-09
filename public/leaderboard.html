@@ -551,19 +551,10 @@
 
     </div>
 
-    <footer>© 2026 Subway Surfers Tournament — Powered by LootLocker</footer>
+    <footer>© 2026 Subway Surfers Tournament — Live Rankings</footer>
 
+    <script src="api.js"></script>
     <script>
-        // ===================================================
-        // LOOTLOCKER CONFIGURATION
-        // Replace these with your actual LootLocker credentials
-        // Get them at: https://console.lootlocker.com
-        // ===================================================
-        const LOOTLOCKER_GAME_KEY = "dev_d84c8183fc554ae28184faee0fedcc3e";     // Game Key from LootLocker Console
-        const LOOTLOCKER_LEADERBOARD_KEY = "subway_surfers_tournament"; // Leaderboard key you created
-        const LOOTLOCKER_DOMAIN_KEY = "5l3294dt"; // Domain Key from LootLocker Console
-
-       const BASE_URL = "https://staging-api.lootlocker.io/game";
 
         const AVATAR_COLORS = [
             ["#FF6B6B","#FFE66D"],["#4ECDC4","#44A08D"],["#A18CD1","#FBC2EB"],
@@ -571,129 +562,53 @@
             ["#ff0084","#ff6b6b"],["#7F00FF","#E100FF"]
         ];
 
-        let sessionToken = null;
-
         // ===================================================
-        // STEP 1: Start a Guest Session with LootLocker
-        // ===================================================
-        async function startGuestSession() {
-            setApiStatus("loading", "Connecting to LootLocker...");
-            try {
-                // Generate or retrieve a persistent player identifier
-                let playerId = localStorage.getItem("ll_player_id");
-                if (!playerId) {
-                    playerId = "player_" + Math.random().toString(36).substr(2, 12);
-                    localStorage.setItem("ll_player_id", playerId);
-                }
-
-                const response = await fetch(`${BASE_URL}/v1/session/guest`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "x-game-key": LOOTLOCKER_GAME_KEY,
-                        "x-version": "1.0"
-                    },
-                    body: JSON.stringify({ game_key: LOOTLOCKER_GAME_KEY, player_identifier: playerId })
-                });
-
-                if (!response.ok) throw new Error(`Session failed: ${response.status}`);
-
-                const data = await response.json();
-                sessionToken = data.session_token;
-                setApiStatus("connected", "LootLocker Connected ✓");
-                await loadLeaderboard();
-            } catch (err) {
-                console.error("LootLocker session error:", err);
-                setApiStatus("error", "LootLocker: " + (LOOTLOCKER_GAME_KEY === "YOUR_GAME_KEY_HERE"
-                    ? "Configure your Game Key above"
-                    : "Connection failed — check credentials"));
-                showFallbackLeaderboard();
-            }
-        }
-
-        // ===================================================
-        // STEP 2: Load Leaderboard from LootLocker
+        // LOAD LEADERBOARD from our own backend
         // ===================================================
         async function loadLeaderboard() {
+            setApiStatus("loading", "Loading rankings...");
             document.getElementById("leaderboardBody").innerHTML =
                 '<tr class="loading-row"><td colspan="3"><i class="fa-solid fa-spinner fa-spin"></i> Fetching rankings...</td></tr>';
-
             try {
-                const response = await fetch(
-                    `${BASE_URL}/v1/leaderboards/${LOOTLOCKER_LEADERBOARD_KEY}/list?count=20`,
-                    {
-                        method: "GET",
-                        headers: {
-                            "x-session-token": sessionToken,
-                            "Content-Type": "application/json"
-                        }
-                    }
-                );
-
-                if (!response.ok) throw new Error(`Fetch failed: ${response.status}`);
-
-                const data = await response.json();
-                renderLeaderboard(data.items || []);
+                const data = await API.getLeaderboard(50);
+                setApiStatus("connected", "Live Rankings ✓");
+                renderLeaderboard(data.leaderboard || []);
             } catch (err) {
                 console.error("Leaderboard fetch error:", err);
-                showFallbackLeaderboard();
+                setApiStatus("error", "Could not load leaderboard");
+                document.getElementById("leaderboardBody").innerHTML =
+                    '<tr><td colspan="3" style="text-align:center;color:#ff6b6b;">Failed to load. Please refresh.</td></tr>';
             }
         }
 
         // ===================================================
-        // STEP 3: Submit Score to LootLocker
+        // SUBMIT SCORE to our own backend (must be logged in)
         // ===================================================
         async function submitScore() {
-            const nameEl = document.getElementById("playerName");
+            const nameEl  = document.getElementById("playerName");
             const scoreEl = document.getElementById("playerScore");
-            const name = nameEl.value.trim();
-            const score = parseInt(scoreEl.value);
+            const score   = parseInt(scoreEl.value);
 
-            if (!name) return showMsg('<i class="fa-solid fa-triangle-exclamation"></i> Please enter a player name.', "error-msg");
-            if (isNaN(score) || score < 0) return showMsg('<i class="fa-solid fa-triangle-exclamation"></i> Enter a valid score (0 or above).', "error-msg");
+            if (isNaN(score) || score < 0)
+                return showMsg('<i class="fa-solid fa-triangle-exclamation"></i> Enter a valid score.', "error-msg");
 
-            if (!sessionToken) {
-                return showMsg('<i class="fa-solid fa-triangle-exclamation"></i> Not connected to LootLocker. Refresh the page.', "error-msg");
-            }
+            if (!Auth.isLoggedIn())
+                return showMsg('<i class="fa-solid fa-triangle-exclamation"></i> Please <a href="login.html" style="color:#00f5ff">login</a> to submit your score.', "error-msg");
 
             const btn = document.getElementById("submitBtn");
             btn.disabled = true;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
 
             try {
-                const memberId = localStorage.getItem("ll_player_id") || name;
-
-                const response = await fetch(
-                    `${BASE_URL}/v1/leaderboards/${LOOTLOCKER_LEADERBOARD_KEY}/submit`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "x-session-token": sessionToken,
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({ score: score, metadata: name })
-                    }
-                );
-
-                if (!response.ok) throw new Error(`Submit failed: ${response.status}`);
-
-                showMsg('<i class="fa-solid fa-circle-check"></i> Score submitted to LootLocker!', "success");
-                nameEl.value = "";
+                await API.submitScore({ score });
+                showMsg('<i class="fa-solid fa-circle-check"></i> Score submitted successfully!', "success");
                 scoreEl.value = "";
                 await loadLeaderboard();
             } catch (err) {
-                console.error("Score submit error:", err);
-                showMsg('<i class="fa-solid fa-triangle-exclamation"></i> Submit failed. Using local fallback.', "error-msg");
-                // Fallback: store locally
-                const stored = JSON.parse(localStorage.getItem("ll_fallback") || "[]");
-                const idx = stored.findIndex(p => p.name.toLowerCase() === name.toLowerCase());
-                if (idx !== -1) { if (score > stored[idx].score) stored[idx].score = score; }
-                else stored.push({ name, score });
-                localStorage.setItem("ll_fallback", JSON.stringify(stored));
-                showFallbackLeaderboard();
+                showMsg('<i class="fa-solid fa-triangle-exclamation"></i> ' + (err.message || 'Submit failed.'), "error-msg");
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-rocket"></i> Submit to LootLocker';
+                btn.innerHTML = '<i class="fa-solid fa-rocket"></i> Submit Score';
             }
         }
 
@@ -715,14 +630,14 @@
             }
 
             empty.style.display = "none";
-            const topScore = items[0].score || 0;
+            const topScore = items[0].highScore || 0;
             document.getElementById("statTopScore").textContent = topScore.toLocaleString();
             tbody.innerHTML = "";
 
             items.forEach((item, i) => {
                 const rank = item.rank || (i + 1);
-                const playerName = item.metadata || item.player?.name || `Player ${rank}`;
-                const score = item.score || 0;
+                const playerName = item.name || `Player ${rank}`;
+                const score = item.highScore || 0;
                 const pct = topScore > 0 ? Math.round((score / topScore) * 100) : 0;
 
                 const rowClass = rank === 1 ? "rank-1-row" : rank === 2 ? "rank-2-row" : rank === 3 ? "rank-3-row" : "";
@@ -756,17 +671,6 @@
         }
 
         // ===================================================
-        // FALLBACK: Use localStorage if LootLocker unavailable
-        // ===================================================
-        function showFallbackLeaderboard() {
-            setApiStatus("error", "Using Local Fallback (Configure LootLocker Keys)");
-            const stored = JSON.parse(localStorage.getItem("ll_fallback") || "[]");
-            const sorted = [...stored].sort((a, b) => b.score - a.score);
-            const items = sorted.map((p, i) => ({ rank: i + 1, metadata: p.name, score: p.score }));
-            renderLeaderboard(items);
-        }
-
-        // ===================================================
         // HELPERS
         // ===================================================
         function getTag(rank) {
@@ -796,8 +700,8 @@
 
         document.addEventListener("keydown", e => { if (e.key === "Enter") submitScore(); });
 
-        // Start the LootLocker session on page load
-        startGuestSession();
+        // Load leaderboard on page load
+        loadLeaderboard();
     </script>
 
 </body>
