@@ -1,456 +1,152 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <title>Tournament Registration – Subway Surfers</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        body { display: block !important; height: auto !important; min-height: 100vh; }
 
-        /* ── Override body flex from style.css ── */
-        body {
-            display: block !important;
-            height: auto !important;
-            min-height: 100vh;
-        }
+        .page-wrap { width: 100%; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
 
-        /* ── Full-width page wrapper ── */
-        .page-wrap {
-            width: 100%;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        /* ══ HERO ══ */
+        .t-hero { width: 100%; padding: 110px 20px 44px; text-align: center; background: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.90) 100%); }
+        .t-hero h1 { font-size: clamp(32px,5vw,56px); font-weight: 800; color: #ffea00; text-shadow: 0 0 12px #ff00c8, 0 0 32px #00f5ff; margin-bottom: 10px; }
+        .t-hero p  { color: #00f5ff; font-size: 16px; font-weight: 500; }
 
-        /* ══════════════ HERO ══════════════ */
-        .t-hero {
-            width: 100%;
-            padding: 110px 20px 44px;
-            text-align: center;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.90) 100%);
-        }
+        /* ══ BODY ══ */
+        .t-body { width: 100%; max-width: 960px; padding: 28px 24px 80px; display: flex; flex-direction: column; align-items: center; }
 
-            .t-hero h1 {
-                font-size: clamp(32px, 5vw, 56px);
-                font-weight: 800;
-                color: #ffea00;
-                text-shadow: 0 0 12px #ff00c8, 0 0 32px #00f5ff;
-                margin-bottom: 10px;
-                letter-spacing: 1px;
-                line-height: 1.15;
-            }
+        /* ══ STATS CARD ══ */
+        .stats-card { width: 100%; background: rgba(0,0,0,0.72); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 24px 30px; margin-bottom: 24px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+        .counter-row { display: flex; justify-content: center; align-items: center; gap: 18px; flex-wrap: wrap; }
+        .c-badge { display: flex; align-items: center; gap: 9px; padding: 11px 26px; border-radius: 50px; font-size: 15px; font-weight: 700; white-space: nowrap; }
+        .c-badge.cyan { background: rgba(0,245,255,0.07); border: 2px solid #00f5ff; color: #00f5ff; box-shadow: 0 0 16px rgba(0,245,255,0.18); }
+        .c-badge.pink { background: rgba(255,0,200,0.07); border: 2px solid #ff00c8; color: #ff00c8; box-shadow: 0 0 16px rgba(255,0,200,0.18); }
+        .c-badge .num { font-size: 22px; color: #ffea00; font-weight: 800; line-height: 1; }
+        .prog-outer { width: 100%; max-width: 520px; }
+        .prog-meta { display: flex; justify-content: space-between; font-size: 12px; color: #64748b; margin-bottom: 8px; }
+        .prog-track { width: 100%; height: 9px; background: rgba(255,255,255,0.07); border-radius: 10px; overflow: hidden; }
+        .prog-fill { height: 100%; background: linear-gradient(90deg, #00f5ff, #ff00c8); border-radius: 10px; transition: width 0.5s ease; box-shadow: 0 0 8px rgba(255,0,200,0.55); }
 
-            .t-hero p {
-                color: #00f5ff;
-                font-size: 16px;
-                font-weight: 500;
-            }
+        /* ══ GRID ══ */
+        .t-grid { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; }
+        @media (max-width: 640px) { .t-grid { grid-template-columns: 1fr; } }
 
-        /* ══════════════ CONTENT AREA ══════════════ */
-        .t-body {
-            width: 100%;
-            max-width: 960px;
-            padding: 28px 24px 80px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        /* ══ PANELS ══ */
+        .t-panel { background: rgba(0,0,0,0.82); border-radius: 18px; padding: 28px 24px; }
+        .t-panel.fp { border: 1px solid rgba(0,245,255,0.22); box-shadow: 0 0 28px rgba(0,245,255,0.06); }
+        .t-panel.lp { border: 1px solid rgba(255,0,200,0.22); box-shadow: 0 0 28px rgba(255,0,200,0.06); }
+        .ph { font-size: 19px; font-weight: 800; letter-spacing: 0.5px; text-align: center; margin-bottom: 22px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .fp .ph { color: #00f5ff; text-shadow: 0 0 10px rgba(0,245,255,0.4); }
+        .lp .ph { color: #ff00c8; text-shadow: 0 0 10px rgba(255,0,200,0.4); }
 
-        /* ══════════════ STATS CARD ══════════════ */
-        .stats-card {
-            width: 100%;
-            background: rgba(0,0,0,0.72);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 18px;
-            padding: 24px 30px;
-            margin-bottom: 24px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 18px;
-        }
+        /* ══ FORM ══ */
+        .fg { margin-bottom: 15px; }
+        .fg label { display: block; font-size: 11px; color: #64748b; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
+        .fg input, .fg select { width: 100%; padding: 11px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; font-size: 14px; font-family: 'Poppins',sans-serif; font-weight: 500; outline: none; transition: border-color 0.2s, box-shadow 0.2s; box-sizing: border-box; }
+        .fg input::placeholder { color: #334155; }
+        .fg input:focus, .fg select:focus { border-color: #00f5ff; box-shadow: 0 0 0 3px rgba(0,245,255,0.1); }
+        .fg select option { background: #0f1b2d; }
 
-        .counter-row {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 18px;
-            flex-wrap: wrap;
-        }
+        /* ══ TOURNAMENT SELECTOR ══ */
+        #tournamentSelector { width: 100%; margin-bottom: 20px; padding: 12px 16px; background: rgba(0,245,255,0.05); border: 1.5px solid rgba(0,245,255,0.3); border-radius: 12px; color: #fff; font-size: 14px; font-family: 'Poppins',sans-serif; font-weight: 600; outline: none; cursor: pointer; }
+        #tournamentSelector:focus { border-color: #00f5ff; box-shadow: 0 0 0 3px rgba(0,245,255,0.12); }
+        #tournamentSelector option { background: #0f1b2d; }
 
-        .c-badge {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            padding: 11px 26px;
-            border-radius: 50px;
-            font-size: 15px;
-            font-weight: 700;
-            white-space: nowrap;
-        }
+        /* ══ REGISTER BUTTON ══ */
+        .reg-btn { width: 100%; padding: 13px; margin-top: 6px; border: none; border-radius: 12px; background: linear-gradient(135deg, #ff00c8, #7c00ff); color: white; font-size: 15px; font-weight: 800; letter-spacing: 1.5px; cursor: pointer; transition: all 0.25s; box-shadow: 0 4px 18px rgba(255,0,200,0.35); font-family: 'Poppins',sans-serif; }
+        .reg-btn:hover:not(:disabled) { background: linear-gradient(135deg,#ffea00,#ff6600); color:#000; box-shadow: 0 4px 22px rgba(255,234,0,0.45); transform: translateY(-2px); }
+        .reg-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
 
-            .c-badge.cyan {
-                background: rgba(0,245,255,0.07);
-                border: 2px solid #00f5ff;
-                color: #00f5ff;
-                box-shadow: 0 0 16px rgba(0,245,255,0.18);
-            }
+        #formMsg { margin-top: 11px; text-align: center; font-size: 13px; font-weight: 600; min-height: 18px; }
+        .msg-success { color: #00e676; }
+        .msg-error { color: #ff6b6b; }
 
-            .c-badge.pink {
-                background: rgba(255,0,200,0.07);
-                border: 2px solid #ff00c8;
-                color: #ff00c8;
-                box-shadow: 0 0 16px rgba(255,0,200,0.18);
-            }
+        /* ══ PARTICIPANTS ══ */
+        .p-list { list-style: none; overflow-y: auto; max-height: 380px; padding-right: 3px; }
+        .p-list::-webkit-scrollbar { width: 4px; }
+        .p-list::-webkit-scrollbar-thumb { background: #ff00c8; border-radius: 10px; }
+        .p-item { display: flex; align-items: center; gap: 11px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 12px 13px; margin-bottom: 9px; animation: slIn 0.28s ease; }
+        @keyframes slIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+        .p-av { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg,#ff00c8,#00f5ff); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; color: #000; flex-shrink: 0; }
+        .p-info { flex: 1; min-width: 0; }
+        .p-name { font-size: 13px; font-weight: 700; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .p-meta { display: flex; align-items: center; gap: 7px; margin-top: 4px; }
+        .rtag { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 700; }
+        .pay-badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 700; background: rgba(0,230,118,0.1); color: #00e676; border: 1px solid #00e676; }
+        .pay-badge.unpaid { background: rgba(255,107,107,0.1); color: #ff6b6b; border-color: #ff6b6b; }
+        .p-date { font-size: 10px; color: #475569; }
+        .empty-wrap { text-align: center; padding: 40px 0; color: #334155; }
+        .empty-wrap .ei { font-size: 42px; display: block; margin-bottom: 10px; }
+        .empty-wrap p { font-size: 13px; }
+        footer { width: 100%; text-align: center; padding: 20px; font-size: 13px; color: #334155; margin-top: auto; }
 
-            .c-badge .num {
-                font-size: 22px;
-                color: #ffea00;
-                font-weight: 800;
-                line-height: 1;
-            }
+        /* ══ LOGIN PROMPT ══ */
+        .login-prompt { background: rgba(255,234,0,0.06); border: 1.5px solid rgba(255,234,0,0.3); border-radius: 14px; padding: 22px; text-align: center; margin-bottom: 16px; }
+        .login-prompt p { color: #ffea00; font-size: 14px; font-weight: 600; margin-bottom: 14px; }
+        .login-prompt a { display: inline-block; padding: 9px 28px; border-radius: 10px; background: linear-gradient(135deg,#ff00c8,#7c00ff); color: #fff; text-decoration: none; font-weight: 700; font-size: 14px; margin: 0 6px; }
+        .login-prompt a.alt { background: rgba(0,245,255,0.15); border: 1px solid #00f5ff; color: #00f5ff; }
 
-        .prog-outer {
-            width: 100%;
-            max-width: 520px;
-        }
+        /* ══ MY REGISTRATIONS LINK ══ */
+        .my-regs-link { display: inline-block; margin-top: 12px; padding: 8px 22px; border-radius: 10px; background: rgba(0,245,255,0.08); border: 1px solid rgba(0,245,255,0.25); color: #00f5ff; text-decoration: none; font-size: 13px; font-weight: 600; transition: 0.2s; }
+        .my-regs-link:hover { background: rgba(0,245,255,0.18); }
 
-        .prog-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #64748b;
-            margin-bottom: 8px;
-        }
+        /* ══════════════════════════════════════
+           PAYMENT MODAL
+        ══════════════════════════════════════ */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.82); backdrop-filter: blur(6px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal-box { background: #0a1628; border: 1px solid rgba(0,245,255,0.2); border-radius: 22px; padding: 36px 32px 28px; width: 100%; max-width: 480px; position: relative; box-shadow: 0 0 60px rgba(0,245,255,0.1), 0 0 60px rgba(255,0,200,0.08); animation: popIn 0.3s ease; }
+        @keyframes popIn { from { transform: scale(0.92) translateY(20px); opacity:0; } to { transform: scale(1) translateY(0); opacity:1; } }
+        .modal-close { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.06); border: none; color: #94a3b8; font-size: 18px; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .modal-close:hover { background: rgba(255,107,107,0.2); color: #ff6b6b; }
+        .modal-title { font-size: 22px; font-weight: 800; color: #00f5ff; text-align: center; margin-bottom: 4px; text-shadow: 0 0 16px rgba(0,245,255,0.4); }
+        .modal-sub { text-align: center; font-size: 13px; color: #64748b; margin-bottom: 24px; }
 
-        .prog-track {
-            width: 100%;
-            height: 9px;
-            background: rgba(255,255,255,0.07);
-            border-radius: 10px;
-            overflow: hidden;
-        }
+        /* Fee Banner */
+        .fee-banner { display: flex; justify-content: space-between; align-items: center; background: rgba(255,234,0,0.06); border: 1px solid rgba(255,234,0,0.2); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; }
+        .fee-label { font-size: 12px; color: #94a3b8; font-weight: 600; text-transform: uppercase; }
+        .fee-amount { font-size: 26px; font-weight: 800; color: #ffea00; text-shadow: 0 0 10px rgba(255,234,0,0.4); }
+        .fee-free { font-size: 16px; font-weight: 800; color: #00e676; }
 
-        .prog-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00f5ff, #ff00c8);
-            border-radius: 10px;
-            transition: width 0.5s ease;
-            box-shadow: 0 0 8px rgba(255,0,200,0.55);
-        }
+        /* Method Grid */
+        .method-label { font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 20px; }
+        .method-btn { padding: 11px 8px; border-radius: 10px; border: 1.5px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: #94a3b8; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.18s; text-align: center; font-family: 'Poppins',sans-serif; }
+        .method-btn:hover { border-color: rgba(0,245,255,0.4); color: #fff; background: rgba(0,245,255,0.06); }
+        .method-btn.selected { border-color: #00f5ff; background: rgba(0,245,255,0.1); color: #00f5ff; box-shadow: 0 0 12px rgba(0,245,255,0.2); }
+        .method-btn .m-icon { font-size: 18px; display: block; margin-bottom: 3px; }
 
-        /* ══════════════ TWO-COLUMN GRID ══════════════ */
-        .t-grid {
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 22px;
-            align-items: start;
-        }
+        /* Dividers */
+        .method-section-title { font-size: 10px; color: #475569; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 14px 0 8px; text-align: center; }
 
-        @media (max-width: 640px) {
-            .t-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+        /* Confirm Button */
+        .confirm-btn { width: 100%; padding: 14px; border: none; border-radius: 12px; background: linear-gradient(135deg,#00f5ff,#7c00ff); color: #fff; font-size: 15px; font-weight: 800; letter-spacing: 1.5px; cursor: pointer; transition: all 0.25s; box-shadow: 0 4px 20px rgba(0,245,255,0.3); font-family: 'Poppins',sans-serif; margin-top: 6px; }
+        .confirm-btn:hover:not(:disabled) { background: linear-gradient(135deg,#ffea00,#ff6600); color: #000; box-shadow: 0 4px 22px rgba(255,234,0,0.4); transform: translateY(-2px); }
+        .confirm-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+        #modalMsg { margin-top: 10px; text-align: center; font-size: 13px; font-weight: 600; min-height: 16px; }
 
-        /* ══════════════ PANELS ══════════════ */
-        .t-panel {
-            background: rgba(0,0,0,0.82);
-            border-radius: 18px;
-            padding: 28px 24px;
-        }
-
-            .t-panel.fp {
-                border: 1px solid rgba(0,245,255,0.22);
-                box-shadow: 0 0 28px rgba(0,245,255,0.06);
-            }
-
-            .t-panel.lp {
-                border: 1px solid rgba(255,0,200,0.22);
-                box-shadow: 0 0 28px rgba(255,0,200,0.06);
-            }
-
-        .ph {
-            font-size: 19px;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            text-align: center;
-            margin-bottom: 22px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-
-        .fp .ph {
-            color: #00f5ff;
-            text-shadow: 0 0 10px rgba(0,245,255,0.4);
-        }
-
-        .lp .ph {
-            color: #ff00c8;
-            text-shadow: 0 0 10px rgba(255,0,200,0.4);
-        }
-
-        /* ══════════════ FORM ══════════════ */
-        .fg {
-            margin-bottom: 15px;
-        }
-
-            .fg label {
-                display: block;
-                font-size: 11px;
-                color: #64748b;
-                font-weight: 600;
-                letter-spacing: 0.5px;
-                text-transform: uppercase;
-                margin-bottom: 6px;
-            }
-
-            .fg input,
-            .fg select {
-                width: 100%;
-                padding: 11px 14px;
-                background: rgba(255,255,255,0.05);
-                border: 1px solid rgba(255,255,255,0.1);
-                border-radius: 10px;
-                color: #fff;
-                font-size: 14px;
-                font-family: 'Poppins', sans-serif;
-                font-weight: 500;
-                outline: none;
-                transition: border-color 0.2s, box-shadow 0.2s;
-            }
-
-                .fg input::placeholder {
-                    color: #334155;
-                }
-
-                .fg input:focus,
-                .fg select:focus {
-                    border-color: #00f5ff;
-                    box-shadow: 0 0 0 3px rgba(0,245,255,0.1);
-                }
-
-                .fg select option {
-                    background: #0f1b2d;
-                }
-
-        .reg-btn {
-            width: 100%;
-            padding: 13px;
-            margin-top: 6px;
-            border: none;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #ff00c8, #7c00ff);
-            color: white;
-            font-size: 15px;
-            font-weight: 800;
-            letter-spacing: 1.5px;
-            cursor: pointer;
-            transition: all 0.25s;
-            box-shadow: 0 4px 18px rgba(255,0,200,0.35);
-            font-family: 'Poppins', sans-serif;
-        }
-
-            .reg-btn:hover:not(:disabled) {
-                background: linear-gradient(135deg, #ffea00, #ff6600);
-                color: #000;
-                box-shadow: 0 4px 22px rgba(255,234,0,0.45);
-                transform: translateY(-2px);
-            }
-
-            .reg-btn:disabled {
-                opacity: 0.35;
-                cursor: not-allowed;
-                transform: none;
-            }
-
-        #formMsg {
-            margin-top: 11px;
-            text-align: center;
-            font-size: 13px;
-            font-weight: 600;
-            min-height: 18px;
-        }
-
-        .msg-success {
-            color: #00e676;
-        }
-
-        .msg-error {
-            color: #ff6b6b;
-        }
-
-        /* ══════════════ PARTICIPANTS ══════════════ */
-        .p-list {
-            list-style: none;
-            overflow-y: auto;
-            max-height: 380px;
-            padding-right: 3px;
-        }
-
-            .p-list::-webkit-scrollbar {
-                width: 4px;
-            }
-
-            .p-list::-webkit-scrollbar-thumb {
-                background: #ff00c8;
-                border-radius: 10px;
-            }
-
-        .p-item {
-            display: flex;
-            align-items: center;
-            gap: 11px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.07);
-            border-radius: 12px;
-            padding: 12px 13px;
-            margin-bottom: 9px;
-            animation: slIn 0.28s ease;
-        }
-
-        @keyframes slIn {
-            from {
-                opacity: 0;
-                transform: translateY(6px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .p-av {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ff00c8, #00f5ff);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 13px;
-            color: #000;
-            flex-shrink: 0;
-        }
-
-        .p-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .p-name {
-            font-size: 13px;
-            font-weight: 700;
-            color: #f1f5f9;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .p-meta {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            margin-top: 4px;
-        }
-
-        .rtag {
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-weight: 700;
-        }
-
-        .rtag-Beginner {
-            background: rgba(0,230,118,0.1);
-            color: #00e676;
-            border: 1px solid #00e676;
-        }
-
-        .rtag-Intermediate {
-            background: rgba(0,245,255,0.1);
-            color: #00f5ff;
-            border: 1px solid #00f5ff;
-        }
-
-        .rtag-Pro {
-            background: rgba(255,234,0,0.1);
-            color: #ffea00;
-            border: 1px solid #ffea00;
-        }
-
-        .rtag-Legend {
-            background: rgba(255,0,200,0.1);
-            color: #ff00c8;
-            border: 1px solid #ff00c8;
-        }
-
-        .p-date {
-            font-size: 10px;
-            color: #475569;
-        }
-
-        .p-del {
-            width: 27px;
-            height: 27px;
-            border-radius: 50%;
-            background: rgba(255,107,107,0.08);
-            border: 1px solid rgba(255,107,107,0.35);
-            color: #ff6b6b;
-            font-size: 13px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
-            flex-shrink: 0;
-            padding: 0;
-            margin: 0;
-            line-height: 1;
-        }
-
-            .p-del:hover {
-                background: #ff6b6b;
-                color: #fff;
-                border-color: #ff6b6b;
-                transform: scale(1.12);
-            }
-
-        .empty-wrap {
-            text-align: center;
-            padding: 40px 0;
-            color: #334155;
-        }
-
-            .empty-wrap .ei {
-                font-size: 42px;
-                display: block;
-                margin-bottom: 10px;
-            }
-
-            .empty-wrap p {
-                font-size: 13px;
-            }
-
-        /* ══════════════ FOOTER ══════════════ */
-        footer {
-            width: 100%;
-            text-align: center;
-            padding: 20px;
-            font-size: 13px;
-            color: #334155;
-            margin-top: auto;
-        }
+        /* ══ SUCCESS RECEIPT ══ */
+        .receipt-box { text-align: center; }
+        .receipt-icon { font-size: 56px; margin-bottom: 10px; }
+        .receipt-title { font-size: 22px; font-weight: 800; color: #00e676; margin-bottom: 6px; }
+        .receipt-sub { color: #64748b; font-size: 13px; margin-bottom: 20px; }
+        .receipt-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; margin-bottom: 22px; }
+        .receipt-table td { padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .receipt-table td:first-child { color: #64748b; font-weight: 600; width: 45%; }
+        .receipt-table td:last-child { color: #f1f5f9; font-weight: 700; }
+        .tx-id { font-family: monospace; font-size: 11px; color: #00f5ff; word-break: break-all; }
+        .receipt-btns { display: flex; gap: 10px; }
+        .receipt-btns a, .receipt-btns button { flex: 1; padding: 11px; border-radius: 10px; font-size: 13px; font-weight: 700; text-align: center; cursor: pointer; text-decoration: none; font-family: 'Poppins',sans-serif; border: none; }
+        .btn-history { background: rgba(0,245,255,0.1); border: 1px solid #00f5ff !important; color: #00f5ff; }
+        .btn-close-r  { background: linear-gradient(135deg,#ff00c8,#7c00ff); color: #fff; }
     </style>
 </head>
 <body>
-
     <!-- NAVBAR -->
     <header>
         <div class="logo">🚇 Subway Surfers Tournament</div>
-                <nav>
+        <nav>
             <a href="index.html">Home</a>
             <a href="schedule.html">Schedule</a>
             <a href="player.html">Players</a>
@@ -464,67 +160,56 @@
     </header>
 
     <div class="page-wrap">
-
-        <!-- HERO BANNER -->
         <div class="t-hero">
             <h1>🏆 Tournament Registration</h1>
             <p>Register now and compete for the Subway Surfers crown!</p>
         </div>
 
-        <!-- CENTERED CONTENT -->
         <div class="t-body">
 
             <!-- STATS CARD -->
             <div class="stats-card">
                 <div class="counter-row">
-                    <div class="c-badge cyan">
-                        👥 Total Registered:&nbsp;<span class="num" id="totalCount">0</span>
-                    </div>
-                    <div class="c-badge pink">
-                        🎫 Slots Left:&nbsp;<span class="num" id="slotsLeft">10</span>&nbsp;/ 10
-                    </div>
+                    <div class="c-badge cyan">👥 Total Registered:&nbsp;<span class="num" id="totalCount">0</span></div>
+                    <div class="c-badge pink">🎫 Slots Left:&nbsp;<span class="num" id="slotsLeft">–</span></div>
                 </div>
                 <div class="prog-outer">
                     <div class="prog-meta">
-                        <span id="progressLabel">0 of 10 slots filled</span>
+                        <span id="progressLabel">Loading…</span>
                         <span id="progressPct">0%</span>
                     </div>
-                    <div class="prog-track">
-                        <div class="prog-fill" id="progressFill" style="width:0%"></div>
-                    </div>
+                    <div class="prog-track"><div class="prog-fill" id="progressFill" style="width:0%"></div></div>
                 </div>
             </div>
 
-            <!-- FORM + LIST GRID -->
+            <!-- GRID -->
             <div class="t-grid">
 
                 <!-- REGISTER FORM -->
                 <div class="t-panel fp">
-                    <div class="ph">✍️ Register Player</div>
+                    <div class="ph">✍️ Register for a Tournament</div>
 
-                    <div class="fg">
-                        <label>Full Name</label>
-                        <input type="text" id="playerName" placeholder="Enter your name" maxlength="40">
-                    </div>
-                    <div class="fg">
-                        <label>Email Address</label>
-                        <input type="email" id="playerEmail" placeholder="Enter your email">
-                    </div>
-                    <div class="fg">
-                        <label>Skill Level</label>
-                        <select id="playerRank">
-                            <option value="">— Select skill level —</option>
-                            <option value="Beginner">Beginner</option>
-                            <option value="Intermediate">Intermediate</option>
-                            <option value="Pro">Pro</option>
-                            <option value="Legend">Legend</option>
-                        </select>
-                    </div>
+                    <div id="loginPromptArea"></div>
 
-                    <button class="reg-btn" id="registerBtn" onclick="registerPlayer()">
-                        ⚡ Register Now
-                    </button>
-                    <div id="formMsg"></div>
+                    <div id="registerArea">
+                        <div class="fg">
+                            <label>Select Tournament</label>
+                            <select id="tournamentSelector">
+                                <option value="">— Loading tournaments… —</option>
+                            </select>
+                        </div>
+                        <div class="fg" id="tournamentInfo" style="display:none">
+                            <label>Prize Pool</label>
+                            <input type="text" id="prizePoolDisplay" readonly style="color:#ffea00;font-weight:700;">
+                        </div>
+                        <button class="reg-btn" id="registerBtn" onclick="openPaymentModal()">
+                            💳 Register &amp; Pay
+                        </button>
+                        <div id="formMsg"></div>
+                        <div style="text-align:center">
+                            <a href="payment.html" class="my-regs-link" id="myRegsLink" style="display:none">📋 My Registrations &amp; Receipts</a>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- PARTICIPANTS LIST -->
@@ -533,104 +218,319 @@
                     <ul class="p-list" id="pList">
                         <li class="empty-wrap" id="emptyState">
                             <span class="ei">🕹️</span>
-                            <p>No players yet — be the first!</p>
+                            <p>Select a tournament to see players</p>
                         </li>
                     </ul>
                 </div>
-
             </div>
         </div>
-
         <footer>© 2026 Subway Surfers Tournament</footer>
     </div>
 
+    <!-- ══ PAYMENT MODAL ══ -->
+    <div class="modal-overlay" id="paymentModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closePaymentModal()">✕</button>
+
+            <!-- Step 1: Choose Payment -->
+            <div id="modalStep1">
+                <div class="modal-title">💳 Complete Payment</div>
+                <div class="modal-sub" id="modalTournamentName">Choose your payment method below</div>
+
+                <div class="fee-banner">
+                    <div>
+                        <div class="fee-label">Entry Fee</div>
+                        <div id="feeDisplay" class="fee-amount">$5.00</div>
+                    </div>
+                    <div style="text-align:right">
+                        <div class="fee-label">Tournament</div>
+                        <div id="feeTournamentName" style="color:#f1f5f9;font-size:13px;font-weight:700;max-width:160px;text-align:right">—</div>
+                    </div>
+                </div>
+
+                <div class="method-label">🇵🇰 Pakistan Methods</div>
+                <div class="method-grid">
+                    <button class="method-btn" data-method="JazzCash" onclick="selectMethod(this)">
+                        <span class="m-icon">📱</span>JazzCash
+                    </button>
+                    <button class="method-btn" data-method="EasyPaisa" onclick="selectMethod(this)">
+                        <span class="m-icon">💚</span>EasyPaisa
+                    </button>
+                </div>
+
+                <div class="method-section-title">── International ──</div>
+                <div class="method-grid">
+                    <button class="method-btn" data-method="Stripe" onclick="selectMethod(this)">
+                        <span class="m-icon">💳</span>Stripe
+                    </button>
+                    <button class="method-btn" data-method="PayPal" onclick="selectMethod(this)">
+                        <span class="m-icon">🅿️</span>PayPal
+                    </button>
+                </div>
+
+                <div class="method-section-title">── Crypto ──</div>
+                <div class="method-grid">
+                    <button class="method-btn" data-method="USDT" onclick="selectMethod(this)">
+                        <span class="m-icon">💵</span>USDT
+                    </button>
+                    <button class="method-btn" data-method="Bitcoin" onclick="selectMethod(this)">
+                        <span class="m-icon">₿</span>Bitcoin
+                    </button>
+                    <button class="method-btn" data-method="Ethereum" onclick="selectMethod(this)">
+                        <span class="m-icon">⟠</span>Ethereum
+                    </button>
+                    <button class="method-btn" data-method="Free" onclick="selectMethod(this)">
+                        <span class="m-icon">🆓</span>Free Entry
+                    </button>
+                </div>
+
+                <button class="confirm-btn" id="confirmPayBtn" onclick="confirmPayment()" disabled>
+                    ⚡ Confirm Payment
+                </button>
+                <div id="modalMsg"></div>
+            </div>
+
+            <!-- Step 2: Receipt -->
+            <div id="modalStep2" style="display:none">
+                <div class="receipt-box">
+                    <div class="receipt-icon">🎉</div>
+                    <div class="receipt-title">Payment Successful!</div>
+                    <div class="receipt-sub">You're officially registered. See you in the arena!</div>
+                    <table class="receipt-table" id="receiptTable"></table>
+                    <div class="receipt-btns">
+                        <a href="payment.html" class="btn-history">📋 All Receipts</a>
+                        <button class="btn-close-r" onclick="closePaymentModal()">🚀 Continue</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
     <script>
-        const MAX = 10;
-        const getPlayers = () => JSON.parse(localStorage.getItem('tournamentPlayers') || '[]');
-        const savePlayers = p => localStorage.setItem('tournamentPlayers', JSON.stringify(p));
+        let tournaments = [];
+        let selectedMethod = null;
+
+        // ── Init ──────────────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', async () => {
+            setupAuthUI();
+            await loadTournaments();
+        });
+
+        function setupAuthUI() {
+            const user = Auth.getUser();
+            const loginArea = document.getElementById('loginPromptArea');
+            const myLink    = document.getElementById('myRegsLink');
+
+            if (!user) {
+                loginArea.innerHTML = `
+                    <div class="login-prompt">
+                        <p>🔐 Please log in to register for a tournament</p>
+                        <a href="login.html">Login</a>
+                        <a href="signup.html" class="alt">Sign Up</a>
+                    </div>`;
+                document.getElementById('registerBtn').disabled = true;
+                document.getElementById('tournamentSelector').disabled = true;
+            } else {
+                myLink.style.display = 'inline-block';
+            }
+        }
+
+        async function loadTournaments() {
+            try {
+                const data = await API.getTournaments('upcoming');
+                tournaments = data.tournaments || data || [];
+
+                const sel = document.getElementById('tournamentSelector');
+                if (tournaments.length === 0) {
+                    sel.innerHTML = '<option value="">— No upcoming tournaments —</option>';
+                    return;
+                }
+                sel.innerHTML = '<option value="">— Select a tournament —</option>' +
+                    tournaments.map(t => `<option value="${t._id}">${t.name} · ${new Date(t.startDate).toLocaleDateString()}</option>`).join('');
+
+                sel.addEventListener('change', onTournamentChange);
+            } catch (e) {
+                document.getElementById('tournamentSelector').innerHTML = '<option value="">— Could not load —</option>';
+                showMsg('Could not load tournaments. Is the server running?', 'error');
+            }
+        }
+
+        function onTournamentChange() {
+            const id = document.getElementById('tournamentSelector').value;
+            if (!id) {
+                document.getElementById('tournamentInfo').style.display = 'none';
+                updateStats(0, 0);
+                clearParticipants();
+                return;
+            }
+            const t = tournaments.find(x => x._id === id);
+            if (!t) return;
+
+            const fee = t.prizePool > 0 ? '$5.00' : 'Free';
+            document.getElementById('prizePoolDisplay').value = `$${t.prizePool.toLocaleString()} prize pool · Entry: ${fee}`;
+            document.getElementById('tournamentInfo').style.display = 'block';
+
+            updateStats(t.players?.length || 0, t.maxPlayers);
+            loadParticipants(id);
+        }
+
+        function updateStats(filled, max) {
+            const pct = max ? Math.round(filled / max * 100) : 0;
+            document.getElementById('totalCount').textContent   = filled;
+            document.getElementById('slotsLeft').textContent    = max ? (max - filled) : '—';
+            document.getElementById('progressFill').style.width = pct + '%';
+            document.getElementById('progressLabel').textContent = max ? `${filled} of ${max} slots filled` : 'Select a tournament';
+            document.getElementById('progressPct').textContent  = pct + '%';
+        }
+
+        async function loadParticipants(tournamentId) {
+            const list  = document.getElementById('pList');
+            const empty = document.getElementById('emptyState');
+            list.querySelectorAll('.p-item').forEach(e => e.remove());
+            empty.style.display = 'block';
+            empty.querySelector('p').textContent = 'Loading…';
+
+            try {
+                const data = await API.getRegistrations({ tournamentId });
+                const regs = data.registrations || [];
+
+                empty.style.display = regs.length === 0 ? 'block' : 'none';
+                if (regs.length === 0) { empty.querySelector('p').textContent = 'No players yet — be the first!'; return; }
+
+                regs.forEach((r, i) => {
+                    const name     = r.playerName || r.user?.firstName + ' ' + r.user?.lastName || 'Player';
+                    const initials = name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+                    const paid     = r.paymentStatus === 'Paid';
+                    const li = document.createElement('li');
+                    li.className = 'p-item';
+                    li.innerHTML = `
+                        <div class="p-av">${initials}</div>
+                        <div class="p-info">
+                            <div class="p-name">#${i + 1} ${name}</div>
+                            <div class="p-meta">
+                                <span class="pay-badge${paid ? '' : ' unpaid'}">${paid ? '✅ Paid' : '⏳ Pending'}</span>
+                                <span class="p-date">${r.paymentMethod || 'Free'}</span>
+                            </div>
+                        </div>`;
+                    list.appendChild(li);
+                });
+            } catch (e) {
+                // Not logged in — show without payment details
+                empty.querySelector('p').textContent = 'Log in to see participants.';
+            }
+        }
+
+        function clearParticipants() {
+            document.getElementById('pList').querySelectorAll('.p-item').forEach(e => e.remove());
+            const empty = document.getElementById('emptyState');
+            empty.style.display = 'block';
+            empty.querySelector('p').textContent = 'Select a tournament to see players';
+            updateStats(0, 0);
+        }
+
+        // ── PAYMENT MODAL ──────────────────────────────────────
+        function openPaymentModal() {
+            const id = document.getElementById('tournamentSelector').value;
+            if (!id) return showMsg('⚠️ Please select a tournament first.', 'error');
+            if (!Auth.isLoggedIn()) return showMsg('⚠️ Please log in first.', 'error');
+
+            const t    = tournaments.find(x => x._id === id);
+            const fee  = t?.prizePool > 0 ? 5 : 0;
+            const name = t?.name || 'Tournament';
+
+            document.getElementById('modalTournamentName').textContent = name;
+            document.getElementById('feeTournamentName').textContent   = name;
+            document.getElementById('feeDisplay').innerHTML = fee === 0
+                ? '<span class="fee-free">FREE 🎉</span>'
+                : `$${fee.toFixed(2)}`;
+
+            // Reset state
+            selectedMethod = null;
+            document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById('confirmPayBtn').disabled = true;
+            document.getElementById('modalMsg').textContent = '';
+            document.getElementById('modalStep1').style.display = 'block';
+            document.getElementById('modalStep2').style.display = 'none';
+
+            // Auto-select Free if no fee
+            if (fee === 0) {
+                const freeBtn = document.querySelector('[data-method="Free"]');
+                if (freeBtn) selectMethod(freeBtn);
+            }
+
+            document.getElementById('paymentModal').classList.add('open');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('open');
+            // Reload participants and stats
+            const id = document.getElementById('tournamentSelector').value;
+            if (id) { onTournamentChange(); }
+        }
+
+        function selectMethod(btn) {
+            document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedMethod = btn.getAttribute('data-method');
+            document.getElementById('confirmPayBtn').disabled = false;
+        }
+
+        async function confirmPayment() {
+            if (!selectedMethod) return;
+            const id = document.getElementById('tournamentSelector').value;
+            if (!id) return;
+
+            const btn = document.getElementById('confirmPayBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Processing…';
+            document.getElementById('modalMsg').textContent = '';
+
+            try {
+                const data = await API.registerForTournament({ tournamentId: id, paymentMethod: selectedMethod });
+                const reg  = data.registration;
+                const pay  = data.paymentSimulation;
+
+                // Build receipt table
+                const rows = [
+                    ['Tournament', reg.tournament?.name || '—'],
+                    ['Player',     reg.playerName],
+                    ['Method',     pay.method],
+                    ['Amount',     pay.amount === 0 ? 'Free' : `$${pay.amount}`],
+                    ['Status',     pay.status],
+                    ['Transaction ID', `<span class="tx-id">${pay.transactionId}</span>`],
+                    ['Registered', new Date(reg.registeredAt).toLocaleString()]
+                ];
+                document.getElementById('receiptTable').innerHTML =
+                    rows.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('');
+
+                document.getElementById('modalStep1').style.display = 'none';
+                document.getElementById('modalStep2').style.display = 'block';
+
+                // Update the open tournament stats
+                const t = tournaments.find(x => x._id === id);
+                if (t) { t.players = [...(t.players || []), 'new']; }
+
+            } catch (e) {
+                document.getElementById('modalMsg').textContent  = '❌ ' + (e.message || 'Payment failed');
+                document.getElementById('modalMsg').style.color  = '#ff6b6b';
+                btn.disabled    = false;
+                btn.textContent = '⚡ Confirm Payment';
+            }
+        }
 
         function showMsg(text, type) {
             const el = document.getElementById('formMsg');
             el.textContent = text;
-            el.className = type === 'success' ? 'msg-success' : 'msg-error';
+            el.className   = type === 'success' ? 'msg-success' : 'msg-error';
             clearTimeout(el._t);
-            el._t = setTimeout(() => el.textContent = '', 3500);
+            el._t = setTimeout(() => el.textContent = '', 4000);
         }
 
-        function registerPlayer() {
-            const name = document.getElementById('playerName').value.trim();
-            const email = document.getElementById('playerEmail').value.trim();
-            const rank = document.getElementById('playerRank').value;
-
-            if (!name) return showMsg('⚠️ Please enter your name.', 'error');
-            if (!email || !email.includes('@')) return showMsg('⚠️ Please enter a valid email.', 'error');
-            if (!rank) return showMsg('⚠️ Please select a skill level.', 'error');
-
-            const players = getPlayers();
-            if (players.length >= MAX)
-                return showMsg('🚫 Tournament full! (10/10)', 'error');
-            if (players.find(p => p.email.toLowerCase() === email.toLowerCase()))
-                return showMsg('⚠️ Email already registered!', 'error');
-
-            players.push({
-                id: Date.now(),
-                name, email, rank,
-                date: new Date().toLocaleDateString()
-            });
-            savePlayers(players);
-
-            document.getElementById('playerName').value = '';
-            document.getElementById('playerEmail').value = '';
-            document.getElementById('playerRank').value = '';
-            showMsg('✅ Successfully registered!', 'success');
-            render();
-        }
-
-        function removePlayer(id) {
-            savePlayers(getPlayers().filter(p => p.id !== id));
-            render();
-        }
-
-        function render() {
-            const players = getPlayers();
-            const filled = players.length;
-            const pct = Math.round(filled / MAX * 100);
-
-            document.getElementById('totalCount').textContent = filled;
-            document.getElementById('slotsLeft').textContent = MAX - filled;
-            document.getElementById('progressFill').style.width = pct + '%';
-            document.getElementById('progressLabel').textContent = `${filled} of ${MAX} slots filled`;
-            document.getElementById('progressPct').textContent = pct + '%';
-            document.getElementById('registerBtn').disabled = filled >= MAX;
-
-            const list = document.getElementById('pList');
-            const empty = document.getElementById('emptyState');
-            list.querySelectorAll('.p-item').forEach(el => el.remove());
-
-            if (filled === 0) { empty.style.display = 'block'; return; }
-            empty.style.display = 'none';
-
-            players.forEach((p, i) => {
-                const initials = p.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
-                const li = document.createElement('li');
-                li.className = 'p-item';
-                li.innerHTML = `
-                        <div class="p-av">${initials}</div>
-                        <div class="p-info">
-                            <div class="p-name">#${i + 1} ${p.name}</div>
-                            <div class="p-meta">
-                                <span class="rtag rtag-${p.rank}">${p.rank}</span>
-                                <span class="p-date">${p.date}</span>
-                            </div>
-                        </div>
-                        <button class="p-del" onclick="removePlayer(${p.id})" title="Remove">✕</button>
-                    `;
-                list.appendChild(li);
-            });
-        }
-
-        render();
+        // Close modal on overlay click
+        document.getElementById('paymentModal').addEventListener('click', function(e) {
+            if (e.target === this) closePaymentModal();
+        });
     </script>
-
 </body>
 </html>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>My Payments & Receipts – Subway Surfers Tournament</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { display: block !important; height: auto !important; min-height: 100vh; }
+        .page-wrap { width: 100%; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+
+        /* ── HERO ── */
+        .p-hero { width: 100%; padding: 110px 20px 44px; text-align: center; background: linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0.92)); }
+        .p-hero h1 { font-size: clamp(28px,5vw,48px); font-weight: 800; color: #ffea00; text-shadow: 0 0 12px #ff00c8, 0 0 32px #00f5ff; margin-bottom: 8px; }
+        .p-hero p  { color: #00f5ff; font-size: 15px; font-weight: 500; }
+
+        /* ── BODY ── */
+        .p-body { width: 100%; max-width: 900px; padding: 28px 20px 80px; }
+
+        /* ── STATS ROW ── */
+        .stats-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 28px; }
+        .stat-card { flex: 1; min-width: 130px; background: rgba(0,0,0,0.72); border-radius: 14px; padding: 18px 20px; text-align: center; }
+        .stat-card.cyan { border: 1px solid rgba(0,245,255,0.25); }
+        .stat-card.pink { border: 1px solid rgba(255,0,200,0.25); }
+        .stat-card.gold { border: 1px solid rgba(255,234,0,0.25); }
+        .stat-card.green { border: 1px solid rgba(0,230,118,0.25); }
+        .stat-num  { font-size: 28px; font-weight: 800; margin-bottom: 4px; }
+        .stat-card.cyan  .stat-num { color: #00f5ff; }
+        .stat-card.pink  .stat-num { color: #ff00c8; }
+        .stat-card.gold  .stat-num { color: #ffea00; }
+        .stat-card.green .stat-num { color: #00e676; }
+        .stat-lbl  { font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* ── FILTER BAR ── */
+        .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
+        .filter-btn { padding: 7px 18px; border-radius: 20px; border: 1.5px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); color: #64748b; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; font-family: 'Poppins',sans-serif; }
+        .filter-btn:hover  { border-color: rgba(0,245,255,0.4); color: #00f5ff; }
+        .filter-btn.active { border-color: #00f5ff; background: rgba(0,245,255,0.1); color: #00f5ff; }
+        .filter-search { flex: 1; min-width: 180px; padding: 8px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; color: #fff; font-size: 13px; font-family: 'Poppins',sans-serif; outline: none; }
+        .filter-search:focus { border-color: #00f5ff; }
+        .filter-search::placeholder { color: #334155; }
+
+        /* ── REGISTRATION CARDS ── */
+        .reg-list { display: flex; flex-direction: column; gap: 14px; }
+
+        .reg-card { background: rgba(0,0,0,0.78); border-radius: 16px; padding: 22px 24px; border: 1px solid rgba(255,255,255,0.07); transition: border-color 0.2s; cursor: pointer; }
+        .reg-card:hover { border-color: rgba(0,245,255,0.25); }
+        .reg-card.paid-card    { border-left: 3px solid #00e676; }
+        .reg-card.pending-card { border-left: 3px solid #ffea00; }
+        .reg-card.unpaid-card  { border-left: 3px solid #ff6b6b; }
+
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+        .card-name   { font-size: 17px; font-weight: 800; color: #f1f5f9; }
+        .card-date   { font-size: 11px; color: #475569; margin-top: 3px; }
+        .badge-row   { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
+
+        .badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 700; }
+        .badge.paid      { background: rgba(0,230,118,0.12); color: #00e676; border: 1px solid #00e676; }
+        .badge.pending   { background: rgba(255,234,0,0.12); color: #ffea00; border: 1px solid #ffea00; }
+        .badge.unpaid    { background: rgba(255,107,107,0.12); color: #ff6b6b; border: 1px solid #ff6b6b; }
+        .badge.refunded  { background: rgba(148,163,184,0.12); color: #94a3b8; border: 1px solid #94a3b8; }
+        .badge.confirmed { background: rgba(0,245,255,0.1); color: #00f5ff; border: 1px solid #00f5ff; }
+        .badge.cancelled { background: rgba(255,107,107,0.1); color: #ff6b6b; border: 1px solid #ff6b6b; }
+        .badge.method    { background: rgba(124,0,255,0.1); color: #b48fff; border: 1px solid rgba(124,0,255,0.4); }
+
+        .card-details { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-bottom: 14px; }
+        .detail-item  { background: rgba(255,255,255,0.03); border-radius: 8px; padding: 9px 12px; }
+        .detail-lbl   { font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; }
+        .detail-val   { font-size: 13px; font-weight: 700; color: #f1f5f9; }
+        .detail-val.gold  { color: #ffea00; }
+        .detail-val.cyan  { color: #00f5ff; }
+        .detail-val.green { color: #00e676; }
+
+        .tx-row  { background: rgba(0,245,255,0.04); border: 1px solid rgba(0,245,255,0.1); border-radius: 8px; padding: 9px 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .tx-lbl  { font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase; }
+        .tx-val  { font-family: monospace; font-size: 12px; color: #00f5ff; word-break: break-all; }
+
+        /* ── EMPTY / ERROR STATES ── */
+        .empty-state { text-align: center; padding: 60px 20px; color: #334155; }
+        .empty-state .ei { font-size: 52px; display: block; margin-bottom: 14px; }
+        .empty-state p  { font-size: 14px; margin-bottom: 20px; }
+        .empty-state a  { display: inline-block; padding: 10px 28px; border-radius: 10px; background: linear-gradient(135deg,#ff00c8,#7c00ff); color: #fff; text-decoration: none; font-weight: 700; font-size: 14px; }
+
+        .loading-state { text-align: center; padding: 60px 20px; color: #64748b; font-size: 15px; }
+        .spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid rgba(0,245,255,0.15); border-top-color: #00f5ff; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 14px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── LOGIN WALL ── */
+        .login-wall { text-align: center; padding: 60px 20px; }
+        .login-wall .lw-icon { font-size: 52px; margin-bottom: 14px; display: block; }
+        .login-wall h2 { font-size: 22px; font-weight: 800; color: #ffea00; margin-bottom: 8px; }
+        .login-wall p  { color: #64748b; font-size: 14px; margin-bottom: 24px; }
+        .login-wall a  { display: inline-block; padding: 11px 30px; border-radius: 10px; background: linear-gradient(135deg,#ff00c8,#7c00ff); color: #fff; text-decoration: none; font-weight: 700; font-size: 15px; margin: 0 6px; }
+        .login-wall a.alt { background: rgba(0,245,255,0.12); border: 1px solid #00f5ff; color: #00f5ff; }
+
+        /* ── RECEIPT MODAL ── */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal-box { background: #0a1628; border: 1px solid rgba(0,245,255,0.2); border-radius: 22px; padding: 36px 30px 28px; width: 100%; max-width: 460px; position: relative; box-shadow: 0 0 60px rgba(0,245,255,0.1); animation: popIn 0.3s ease; }
+        @keyframes popIn { from { transform: scale(0.92) translateY(16px); opacity:0; } to { transform: scale(1) translateY(0); opacity:1; } }
+        .modal-close { position: absolute; top: 14px; right: 14px; background: rgba(255,255,255,0.06); border: none; color: #94a3b8; font-size: 18px; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .modal-close:hover { background: rgba(255,107,107,0.2); color: #ff6b6b; }
+
+        .receipt-title { font-size: 20px; font-weight: 800; color: #00f5ff; text-align: center; margin-bottom: 4px; }
+        .receipt-sub   { color: #64748b; font-size: 12px; text-align: center; margin-bottom: 22px; }
+        .receipt-stamp { display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(0,230,118,0.08); border: 1px solid rgba(0,230,118,0.3); border-radius: 10px; padding: 10px 16px; margin-bottom: 20px; font-size: 14px; font-weight: 700; color: #00e676; }
+        .receipt-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .receipt-table td { padding: 9px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .receipt-table td:first-child { color: #64748b; font-weight: 600; width: 42%; }
+        .receipt-table td:last-child  { color: #f1f5f9; font-weight: 700; }
+        .tx-mono { font-family: monospace; font-size: 11px; color: #00f5ff; word-break: break-all; }
+
+        .print-btn { width: 100%; margin-top: 20px; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(135deg,#00f5ff,#7c00ff); color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Poppins',sans-serif; transition: 0.2s; }
+        .print-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+        footer { width: 100%; text-align: center; padding: 20px; font-size: 13px; color: #334155; margin-top: auto; }
+
+        @media (max-width: 540px) {
+            .stats-row { gap: 8px; }
+            .stat-card { padding: 14px 12px; }
+            .stat-num  { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">🚇 Subway Surfers Tournament</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="schedule.html">Schedule</a>
+            <a href="Tournament.html">Tournament</a>
+            <a href="leaderboard.html">Leaderboard</a>
+            <a href="contact.html">Contact</a>
+            <a href="signup.html">Sign Up</a>
+            <a href="login.html">Login</a>
+        </nav>
+    </header>
+
+    <div class="page-wrap">
+        <div class="p-hero">
+            <h1>💳 My Payments &amp; Receipts</h1>
+            <p>View your tournament registrations and payment history</p>
+        </div>
+
+        <div class="p-body">
+            <div id="mainContent"></div>
+        </div>
+
+        <footer>© 2026 Subway Surfers Tournament</footer>
+    </div>
+
+    <!-- RECEIPT MODAL -->
+    <div class="modal-overlay" id="receiptModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeReceipt()">✕</button>
+            <div class="receipt-title">🧾 Payment Receipt</div>
+            <div class="receipt-sub" id="receiptModalSub">Official registration confirmation</div>
+            <div class="receipt-stamp" id="receiptStamp">✅ Payment Confirmed</div>
+            <table class="receipt-table" id="receiptModalTable"></table>
+            <button class="print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        let allRegistrations = [];
+        let activeFilter = 'all';
+
+        document.addEventListener('DOMContentLoaded', init);
+
+        async function init() {
+            const user = Auth.getUser();
+            const content = document.getElementById('mainContent');
+
+            if (!user) {
+                content.innerHTML = `
+                    <div class="login-wall">
+                        <span class="lw-icon">🔐</span>
+                        <h2>Login Required</h2>
+                        <p>Please log in to view your payment history and receipts.</p>
+                        <a href="login.html">Login</a>
+                        <a href="signup.html" class="alt">Sign Up</a>
+                    </div>`;
+                return;
+            }
+
+            content.innerHTML = `<div class="loading-state"><div class="spinner"></div><br>Loading your registrations…</div>`;
+
+            try {
+                const data = await API.getRegistrations();
+                allRegistrations = data.registrations || [];
+                renderPage(allRegistrations);
+            } catch (e) {
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <span class="ei">⚠️</span>
+                        <p style="color:#ff6b6b">${e.message || 'Could not load registrations.'}</p>
+                        <a href="Tournament.html">Browse Tournaments</a>
+                    </div>`;
+            }
+        }
+
+        function renderPage(regs) {
+            const content = document.getElementById('mainContent');
+
+            if (regs.length === 0 && activeFilter === 'all') {
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <span class="ei">🎮</span>
+                        <p>You haven't registered for any tournaments yet.</p>
+                        <a href="Tournament.html">Register Now</a>
+                    </div>`;
+                return;
+            }
+
+            // Stats
+            const total    = allRegistrations.length;
+            const paid     = allRegistrations.filter(r => r.paymentStatus === 'Paid').length;
+            const totalAmt = allRegistrations.reduce((s, r) => s + (r.paymentAmount || 0), 0);
+            const upcoming = allRegistrations.filter(r => r.status === 'confirmed').length;
+
+            // Filter
+            const filtered = activeFilter === 'all' ? regs :
+                             activeFilter === 'paid' ? regs.filter(r => r.paymentStatus === 'Paid') :
+                             activeFilter === 'free' ? regs.filter(r => r.paymentMethod === 'Free') :
+                             regs.filter(r => r.paymentStatus !== 'Paid');
+
+            content.innerHTML = `
+                <div class="stats-row">
+                    <div class="stat-card cyan">
+                        <div class="stat-num">${total}</div>
+                        <div class="stat-lbl">Total Registrations</div>
+                    </div>
+                    <div class="stat-card green">
+                        <div class="stat-num">${paid}</div>
+                        <div class="stat-lbl">Paid</div>
+                    </div>
+                    <div class="stat-card gold">
+                        <div class="stat-num">$${totalAmt.toFixed(2)}</div>
+                        <div class="stat-lbl">Total Spent</div>
+                    </div>
+                    <div class="stat-card pink">
+                        <div class="stat-num">${upcoming}</div>
+                        <div class="stat-lbl">Confirmed</div>
+                    </div>
+                </div>
+
+                <div class="filter-bar">
+                    <button class="filter-btn ${activeFilter==='all'?'active':''}"    onclick="setFilter('all')">All (${total})</button>
+                    <button class="filter-btn ${activeFilter==='paid'?'active':''}"   onclick="setFilter('paid')">✅ Paid (${paid})</button>
+                    <button class="filter-btn ${activeFilter==='unpaid'?'active':''}" onclick="setFilter('unpaid')">⏳ Unpaid (${total-paid})</button>
+                    <button class="filter-btn ${activeFilter==='free'?'active':''}"   onclick="setFilter('free')">🆓 Free</button>
+                    <input  class="filter-search" id="searchInput" placeholder="🔍 Search tournament…" oninput="onSearch()" value="">
+                </div>
+
+                <div class="reg-list" id="regList"></div>`;
+
+            renderCards(filtered);
+        }
+
+        function renderCards(regs) {
+            const list = document.getElementById('regList');
+            if (!list) return;
+
+            if (regs.length === 0) {
+                list.innerHTML = `<div class="empty-state" style="padding:40px 0"><span class="ei">🔎</span><p>No registrations match this filter.</p></div>`;
+                return;
+            }
+
+            list.innerHTML = regs.map((r, i) => {
+                const payClass   = r.paymentStatus === 'Paid' ? 'paid-card' : r.paymentStatus === 'Pending' ? 'pending-card' : 'unpaid-card';
+                const payBadge   = r.paymentStatus === 'Paid' ? 'paid' : r.paymentStatus === 'Pending' ? 'pending' : r.paymentStatus === 'Refunded' ? 'refunded' : 'unpaid';
+                const regBadge   = r.status === 'confirmed' ? 'confirmed' : r.status === 'cancelled' ? 'cancelled' : 'pending';
+                const tName      = r.tournament?.name || 'Tournament';
+                const tDate      = r.tournament?.startDate ? new Date(r.tournament.startDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+                const regDate    = new Date(r.registeredAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+                const amount     = r.paymentAmount === 0 ? 'Free' : `$${r.paymentAmount.toFixed(2)}`;
+                const prize      = r.tournament?.prizePool ? `$${r.tournament.prizePool.toLocaleString()}` : '—';
+                const txShort    = r.transactionId ? (r.transactionId.length > 22 ? r.transactionId.substring(0,22)+'…' : r.transactionId) : '—';
+
+                return `
+                <div class="reg-card ${payClass}" onclick="openReceipt('${r._id}')">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-name">🏆 ${tName}</div>
+                            <div class="card-date">Registered: ${regDate}</div>
+                        </div>
+                        <div class="badge-row">
+                            <span class="badge ${payBadge}">${r.paymentStatus}</span>
+                            <span class="badge ${regBadge}">${r.status}</span>
+                            <span class="badge method">${r.paymentMethod}</span>
+                        </div>
+                    </div>
+                    <div class="card-details">
+                        <div class="detail-item">
+                            <div class="detail-lbl">Amount Paid</div>
+                            <div class="detail-val gold">${amount}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-lbl">Tournament Date</div>
+                            <div class="detail-val cyan">${tDate}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-lbl">Prize Pool</div>
+                            <div class="detail-val green">${prize}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-lbl">Player Name</div>
+                            <div class="detail-val">${r.playerName}</div>
+                        </div>
+                    </div>
+                    ${r.transactionId ? `
+                    <div class="tx-row">
+                        <span class="tx-lbl">Transaction ID</span>
+                        <span class="tx-val">${txShort}</span>
+                    </div>` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        function setFilter(f) {
+            activeFilter = f;
+            renderPage(allRegistrations);
+        }
+
+        function onSearch() {
+            const q = document.getElementById('searchInput')?.value.toLowerCase() || '';
+            const filtered = allRegistrations.filter(r =>
+                (r.tournament?.name || '').toLowerCase().includes(q) ||
+                (r.paymentMethod || '').toLowerCase().includes(q) ||
+                (r.transactionId || '').toLowerCase().includes(q)
+            );
+            renderCards(filtered);
+        }
+
+        function openReceipt(regId) {
+            const r = allRegistrations.find(x => x._id === regId);
+            if (!r) return;
+
+            const paid    = r.paymentStatus === 'Paid';
+            const amount  = r.paymentAmount === 0 ? 'Free' : `$${r.paymentAmount.toFixed(2)}`;
+            const tDate   = r.tournament?.startDate ? new Date(r.tournament.startDate).toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'}) : '—';
+            const regDate = new Date(r.registeredAt).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+
+            document.getElementById('receiptModalSub').textContent = r.tournament?.name || 'Tournament Registration';
+            document.getElementById('receiptStamp').innerHTML = paid
+                ? '✅ Payment Confirmed'
+                : `<span style="color:#ffea00">⏳ ${r.paymentStatus}</span>`;
+            document.getElementById('receiptStamp').style.borderColor = paid ? 'rgba(0,230,118,0.3)' : 'rgba(255,234,0,0.3)';
+            document.getElementById('receiptStamp').style.background  = paid ? 'rgba(0,230,118,0.08)' : 'rgba(255,234,0,0.08)';
+
+            const rows = [
+                ['Tournament',      r.tournament?.name || '—'],
+                ['Player',          r.playerName],
+                ['Email',           r.email],
+                ['Country',         r.country || '—'],
+                ['Tournament Date', tDate],
+                ['Prize Pool',      r.tournament?.prizePool ? `$${r.tournament.prizePool.toLocaleString()}` : 'No prize'],
+                ['Payment Method',  r.paymentMethod],
+                ['Amount Paid',     amount],
+                ['Payment Status',  r.paymentStatus],
+                ['Reg. Status',     r.status],
+                ['Transaction ID',  `<span class="tx-mono">${r.transactionId || '—'}</span>`],
+                ['Registered On',   regDate],
+            ];
+
+            document.getElementById('receiptModalTable').innerHTML =
+                rows.map(([k,v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('');
+
+            document.getElementById('receiptModal').classList.add('open');
+        }
+
+        function closeReceipt() {
+            document.getElementById('receiptModal').classList.remove('open');
+        }
+
+        document.getElementById('receiptModal').addEventListener('click', function(e) {
+            if (e.target === this) closeReceipt();
+        });
+    </script>
+</body>
+</html>
